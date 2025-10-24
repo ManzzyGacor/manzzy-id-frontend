@@ -1,0 +1,242 @@
+/* styles/main.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --color-black-diamond: #0a0a0a;
+    --color-dark-gray: #1a1a1a;
+    --color-accent: #00bcd4; /* Cyan Neon untuk aksen */
+    --color-text-light: #e0e0e0;
+    --color-shadow: rgba(0, 0, 0, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-black-diamond);
+    color: var(--color-text-light);
+    line-height: 1.6;
+}
+
+/* --- Gaya Card Umum --- */
+.container-card {
+    background-color: var(--color-dark-gray);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px var(--color-shadow);
+    transition: transform 0.3s ease-in-out;
+}
+
+.container-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 50px rgba(0, 188, 212, 0.2); 
+}
+
+/* --- Input dan Tombol --- */
+input[type="text"], 
+input[type="password"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--color-dark-gray);
+    border-radius: 6px;
+    background-color: #2c2c2c;
+    color: var(--color-text-light);
+    transition: border-color 0.3s;
+    resize: vertical;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--color-accent);
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-black-diamond);
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #00e5ff;
+    transform: scale(1.05);
+}
+
+/* --- Gaya Dashboard Spesifik --- */
+
+.icon-large {
+    font-size: 4em; 
+    color: var(--color-accent);
+    margin-bottom: 10px;
+    animation: pulse 2s infinite; 
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#card-saldo {
+    background: linear-gradient(135deg, #1b1b1b, #333333); 
+    border: 1px solid var(--color-accent);
+    box-shadow: 0 0 50px rgba(0, 188, 212, 0.4); 
+}
+
+.info-card h2 {
+    font-size: 1.2em; 
+    margin-top: 10px;
+    color: var(--color-accent);
+}
+
+.info-card p {
+    font-size: 2.5em !important; 
+    font-weight: 700;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.product-card {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #252525;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px var(--color-shadow);
+    border: 1px solid var(--color-accent);
+}
+
+/* --- Gaya Navbar & Hamburger Menu --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #111;
+    border-bottom: 1px solid var(--color-dark-gray);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.hamburger-menu {
+    cursor: pointer;
+    padding: 10px;
+    display: block;
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: var(--color-accent);
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-links {
+    position: fixed;
+    right: 0;
+    top: 60px; 
+    width: 250px;
+    background-color: #1e1e1e; 
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%); 
+    list-style: none;
+    padding: 20px 0;
+    z-index: 99;
+}
+
+.nav-links.active {
+    transform: translateX(0); 
+}
+
+.nav-links a {
+    display: block;
+    padding: 15px 30px;
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #222;
+}
+
+.nav-links a:hover {
+    background-color: var(--color-accent);
+    color: var(--color-black-diamond);
+}
+
+.hamburger-menu.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* --- Gaya Admin Spesifik --- */
+.admin-header {
+    background-color: #3a0000;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #ff0000;
+}
+.admin-container {
+    padding: 50px;
+}
+.data-section {
+    margin-bottom: 40px;
+}
+.data-section h2 {
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1a1a1a;
+}
+th, td {
+    border: 1px solid #333;
+    padding: 12px;
+    text-align: left;
+}
+th {
+    background-color: var(--color-dark-gray);
+    color: var(--color-accent);
+}
+.form-add-saldo {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+.form-add-saldo > div {
+    flex: 1;
+}
