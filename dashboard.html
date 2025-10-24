@@ -7,28 +7,81 @@
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* CSS Tambahan untuk Penempatan dan Responsivitas */
-        .dashboard-grid {
-            /* Gaya ini sudah diatur di main.css agar card menjadi persegi panjang */
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px;
+        /* CSS tambahan untuk layout baru */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            background-color: rgba(30, 30, 50, 0.8); /* Warna lebih gelap untuk profile */
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 50px; /* Jarak dari atas dan samping */
             max-width: 1200px;
-            margin: 0 auto;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
         }
-        .info-card {
+        .profile-pic {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #444; /* Warna background default pic */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            overflow: hidden; /* Jaga ikon tetap di dalam lingkaran */
+        }
+        .profile-pic i {
+            font-size: 3em;
+            color: #ccc;
+        }
+        .profile-info h3 {
+            margin: 0;
+            font-size: 1.4em;
+            color: var(--color-text-light);
+        }
+        .profile-info p {
+            margin: 5px 0 0 0;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #4CAF50; /* Warna hijau untuk saldo */
+        }
+
+        .navigation-section {
+            display: flex; /* Menyusun kotak secara horizontal */
+            justify-content: space-around; /* Memberi jarak antar kotak */
+            gap: 20px; /* Jarak antar kotak */
+            padding: 0 50px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        .nav-box {
+            background-color: var(--color-dark-gray);
+            padding: 25px;
+            border-radius: 10px;
             text-align: center;
-            padding: 25px; /* Padding lebih kecil untuk efek persegi panjang */
+            flex: 1; /* Agar semua kotak lebarnya sama */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--color-text-light);
+            border: 1px solid transparent;
         }
-        .notification {
-            background-color: #2a2a2a;
+        .nav-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 188, 212, 0.3);
+            border-color: var(--color-accent);
+        }
+        .nav-box i {
+            font-size: 2.5em;
             color: var(--color-accent);
-            padding: 15px 50px;
-            text-align: center;
-            border-bottom: 2px solid var(--color-accent);
-            font-weight: 600;
+            margin-bottom: 10px;
         }
+        .nav-box h4 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -37,6 +90,20 @@
             margin-top: 50px;
             border-top: 1px solid #1f1f1f;
         }
+        /* Responsif untuk Navigasi */
+        @media (max-width: 768px) {
+            .navigation-section {
+                flex-direction: column; /* Tumpuk vertikal di layar kecil */
+            }
+            .profile-section {
+                flex-direction: column;
+                align-items: flex-start;
+                margin: 20px;
+            }
+             .profile-pic {
+                margin-bottom: 15px;
+             }
+        }
     </style>
 </head>
 <body>
@@ -44,51 +111,50 @@
 
     <nav class="navbar">
         <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
-        
         <div class="hamburger-menu" id="hamburger-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
         </div>
-        
         <ul class="nav-links" id="nav-links">
             <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
             <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
-            <li><a href="admin.html" id="admin-link">Login Admin</a></li> 
-            <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
+            <li><a href="admin.html" id="admin-link">Login Admin</a></li>
+            <li><a href="pterodactyl.html">Panel Server</a></li> <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
             <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
         </ul>
     </nav>
 
-    <div class="notification" id="login-notification">
-        Anda login sebagai <span id="welcome-username"></span>
+    <div class="profile-section">
+        <div class="profile-pic">
+            <i class="fas fa-user"></i> </div>
+        <div class="profile-info">
+            <h3 id="profile-username">[Nama User]</h3>
+            <p id="profile-saldo">Rp 0</p>
+        </div>
     </div>
 
-    <div class="dashboard-grid">
-        <div class="container-card info-card" id="card-saldo">
-            <i class="fas fa-wallet icon-large"></i> 
-            <h2>SALDO ANDA</h2>
-            <p id="user-saldo">Rp 0.00</p>
-            <button class="btn-primary" onclick="showIsiSaldoForm()" style="margin-top: 15px;">+ ISI SALDO MANUAL</button>
-        </div>
+    <div class="navigation-section">
+        <a href="#" onclick="showIsiSaldoForm()" class="nav-box">
+            <i class="fas fa-wallet"></i>
+            <h4>Top Up Saldo</h4>
+        </a>
+        <a href="pterodactyl.html" class="nav-box"> <i class="fas fa-server"></i>
+            <h4>Panel Server</h4>
+        </a>
+        <a href="https://discord.gg/yourinvite" target="_blank" class="nav-box"> <i class="fab fa-discord"></i>
+            <h4>Jadi Bot (Discord)</h4>
+        </a>
+    </div>
 
-        <div class="container-card info-card">
-            <i class="fas fa-chart-line icon-large"></i> 
-            <h2>TOTAL TRANSAKSI</h2>
-            <p id="user-transaksi">0</p>
-        </div>
-        
-        <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s;"> 
-            <h2>Konfirmasi Isi Saldo</h2>
-            <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
-            <form id="isiSaldoForm">
-                <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
-                <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
-                <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
-            </form>
-            <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
-        </div>
-    </div> 
+    <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s; max-width: 500px; margin: 30px auto;"> 
+        <h2>Konfirmasi Isi Saldo</h2>
+        <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
+        <form id="isiSaldoForm">
+            <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
+            <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
+            <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
+        </form>
+        <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
+    </div>
 
     <div style="padding: 0 50px; max-width: 1200px; margin: 0 auto;">
         <h2 style="margin-top: 40px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
@@ -105,37 +171,30 @@
     <div id="purchase-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
         <div class="container-card" style="margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;">
             <span class="close-btn" onclick="closeModal()" style="position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;">&times;</span>
-            
             <h2 id="modal-product-name" style="color: var(--color-accent); margin-bottom: 10px;">[Nama Produk]</h2>
             <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
             <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
             <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
-
             <form id="purchaseForm">
                 <input type="hidden" id="modal-product-id">
-                
                 <label for="quantity">Jumlah Pembelian:</label>
                 <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
-                
                 <label style="display: block;">Total Biaya:</label>
                 <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
-                
                 <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
             </form>
         </div>
     </div>
-    <div id="success-modal" style="display: none; position: fixed; z-index: 1001; /* Di atas modal lain */ left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+
+    <div id="success-modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
         <div class="container-card" style="margin: 15% auto; padding: 30px; width: 80%; max-width: 450px; text-align: center; position: relative;">
             <span class="close-btn" onclick="closeSuccessModal()" style="position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
-            
             <i class="fas fa-check-circle" style="font-size: 4em; color: #4CAF50; margin-bottom: 20px;"></i>
             <h2 style="color: #4CAF50; margin-bottom: 15px;">Pembelian Berhasil!</h2>
             <p id="success-message" style="margin-bottom: 25px;">Stok telah dikurangi. Silakan konfirmasi pesanan Anda kepada Admin.</p>
-
             <a id="whatsapp-confirm-button" href="#" target="_blank" class="btn-primary" style="background-color: #25D366; color: white; display: block; width: 100%; text-decoration: none;">
                 <i class="fab fa-whatsapp"></i> Konfirmasi via WhatsApp
             </a>
-            
             <button onclick="closeSuccessModal()" style="margin-top: 15px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
         </div>
     </div>
@@ -150,5 +209,4 @@
     </script>
     <script src="scripts/dashboard.js"></script>
 </body>
-</html>
-            
+    </html>            
