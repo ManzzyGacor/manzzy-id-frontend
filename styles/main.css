@@ -1,12 +1,15 @@
-/* styles/main.css */
+/* styles/main.css (VERSI FINAL - 24 Oktober 2025) */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
-    --color-black-diamond: #0a0a0a;
+    --color-black-diamond: #0a0a0a; /* Fallback */
     --color-dark-gray: #1a1a1a;
-    --color-accent: #00bcd4; /* Cyan Neon untuk aksen */
+    --color-accent: #00bcd4; /* Cyan Neon */
     --color-text-light: #e0e0e0;
     --color-shadow: rgba(0, 0, 0, 0.5);
+    --color-gradient-start: #0f0a28; /* Deep Blue/Purple */
+    --color-gradient-mid: #1a1a40;   /* Darker Blue/Purple */
+    --color-gradient-end: #000000;   /* Black */
 }
 
 * {
@@ -18,57 +21,59 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--color-black-diamond);
     color: var(--color-text-light);
     line-height: 1.6;
+    /* BACKGROUND GRADASI BARU */
+    background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 50%, var(--color-gradient-end) 100%);
+    min-height: 100vh; /* Pastikan gradasi mengisi seluruh layar */
 }
 
-/* --- Galaxy Animation (Starfield) --- */
-#star-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -10; /* Pastikan di belakang semua konten */
-}
-
-/* --- Gaya Card Umum --- */
+/* --- Gaya Card Umum (Glassmorphism) --- */
 .container-card {
-    /* Menambahkan transparansi dan blur untuk efek Galaxy Glassmorphism */
-    background-color: rgba(26, 26, 26, 0.85); 
-    backdrop-filter: blur(5px); 
-    
-    padding: 40px;
+    background-color: rgba(10, 10, 20, 0.85); /* Warna dasar card lebih gelap & transparan */
+    backdrop-filter: blur(8px); /* Efek blur yang lebih kuat */
+    border: 1px solid rgba(0, 188, 212, 0.3); /* Border aksen transparan */
+    padding: 30px 40px; /* Padding disesuaikan */
     border-radius: 12px;
-    box-shadow: 0 0 20px var(--color-shadow);
-    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
 }
 
 .container-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 50px rgba(0, 188, 212, 0.2); 
+    box-shadow: 0 10px 40px rgba(0, 188, 212, 0.3);
 }
 
 /* --- Input dan Tombol --- */
-input[type="text"], 
+input[type="text"],
 input[type="password"],
 input[type="number"],
-textarea {
+textarea,
+select { /* Menambahkan select */
     width: 100%;
     padding: 12px;
     margin-bottom: 20px;
-    border: 1px solid var(--color-dark-gray);
+    border: 1px solid #333; /* Border lebih terlihat */
     border-radius: 6px;
     background-color: #2c2c2c;
     color: var(--color-text-light);
     transition: border-color 0.3s;
     resize: vertical;
+    font-family: inherit; /* Pastikan font sama */
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     border-color: var(--color-accent);
     outline: none;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+}
+
+select {
+    appearance: none; /* Hapus tampilan default dropdown */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2300bcd4' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* Panah custom */
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
 }
 
 .btn-primary {
@@ -80,80 +85,12 @@ input:focus, textarea:focus {
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.3s, transform 0.2s;
+    text-transform: uppercase; /* Membuat teks tombol lebih tegas */
 }
 
 .btn-primary:hover {
     background-color: #00e5ff;
     transform: scale(1.05);
-}
-
-/* --- Gaya Dashboard Spesifik --- */
-
-.icon-large {
-    font-size: 4em; 
-    color: var(--color-accent);
-    margin-bottom: 10px;
-    animation: pulse 2s infinite; 
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-#card-saldo {
-    background: linear-gradient(135deg, #1b1b1b, #333333); 
-    border: 1px solid var(--color-accent);
-    box-shadow: 0 0 50px rgba(0, 188, 212, 0.4); 
-}
-
-/* Modifikasi Gaya Dashboard Grid dan Info Card (Untuk Persegi Panjang) */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-    gap: 20px; 
-    padding: 30px 50px; 
-    max-width: 1200px; 
-    margin: 0 auto; 
-}
-
-.info-card {
-    padding: 25px; /* Mengurangi padding vertikal untuk tampilan persegi panjang */
-    text-align: center;
-}
-
-.info-card h2 {
-    font-size: 1.1em; /* Mengurangi ukuran judul card */
-    margin-top: 10px;
-    color: var(--color-accent);
-}
-
-.info-card p {
-    font-size: 2em !important; /* Mengurangi ukuran Saldo/Transaksi dari 2.5em */
-    font-weight: 700;
-}
-
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
-}
-
-.product-card {
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #252525;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px var(--color-shadow);
-    border: 1px solid var(--color-accent);
 }
 
 /* --- Gaya Navbar & Hamburger Menu --- */
@@ -162,8 +99,9 @@ input:focus, textarea:focus {
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;
-    background-color: #111;
-    border-bottom: 1px solid var(--color-dark-gray);
+    background-color: rgba(17, 17, 17, 0.9); /* Navbar sedikit transparan */
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid #2a2a2a; /* Border lebih halus */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -187,19 +125,20 @@ input:focus, textarea:focus {
 .nav-links {
     position: fixed;
     right: 0;
-    top: 60px; 
+    top: 60px;
     width: 250px;
-    background-color: #1e1e1e; 
+    background-color: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease-in-out;
-    transform: translateX(100%); 
+    transform: translateX(100%);
     list-style: none;
     padding: 20px 0;
     z-index: 99;
 }
 
 .nav-links.active {
-    transform: translateX(0); 
+    transform: translateX(0);
 }
 
 .nav-links a {
@@ -207,8 +146,8 @@ input:focus, textarea:focus {
     padding: 15px 30px;
     color: var(--color-text-light);
     text-decoration: none;
-    transition: background-color 0.2s;
-    border-bottom: 1px solid #222;
+    transition: background-color 0.2s, color 0.2s;
+    border-bottom: 1px solid #2f2f2f;
 }
 
 .nav-links a:hover {
@@ -216,17 +155,105 @@ input:focus, textarea:focus {
     color: var(--color-black-diamond);
 }
 
-.hamburger-menu.active .bar:nth-child(2) {
-    opacity: 0;
+.hamburger-menu.active .bar:nth-child(2) { opacity: 0; }
+.hamburger-menu.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger-menu.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+
+/* --- Gaya Dashboard Spesifik --- */
+
+/* Profile Section */
+.profile-section {
+    display: flex;
+    align-items: center;
+    background-color: rgba(30, 30, 50, 0.8);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 30px 50px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+}
+.profile-pic {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.profile-pic i { font-size: 3em; color: #ccc; }
+.profile-info h3 { margin: 0; font-size: 1.4em; color: var(--color-text-light); word-break: break-all; }
+.profile-info p { margin: 5px 0 0 0; font-size: 1.6em; font-weight: bold; color: #4CAF50; }
+
+/* Navigation Section (GRID LAYOUT) */
+.navigation-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Kolom otomatis */
+    gap: 20px;
+    padding: 0 50px;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+.nav-box {
+    background-color: var(--color-dark-gray);
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-text-light);
+    border: 1px solid transparent;
+}
+.nav-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 188, 212, 0.3);
+    border-color: var(--color-accent);
+}
+.nav-box i { font-size: 2.5em; color: var(--color-accent); margin-bottom: 10px; }
+.nav-box h4 { margin: 0; font-size: 1.1em; }
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+.product-card {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #252525;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px var(--color-shadow);
+    border: 1px solid var(--color-accent);
 }
 
-.hamburger-menu.active .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+/* Modal Styling */
+.modal {
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);
 }
-
-.hamburger-menu.active .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+.modal-content {
+     margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;
 }
+.success-modal-content {
+     margin: 15% auto; padding: 30px; width: 80%; max-width: 450px; text-align: center; position: relative;
+}
+.close-btn {
+    position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;
+}
+ .success-modal-content .close-btn { color: #aaa; }
 
 /* --- Gaya Admin Spesifik --- */
 .admin-header {
@@ -251,7 +278,8 @@ input:focus, textarea:focus {
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #1a1a1a;
+    background-color: rgba(26, 26, 26, 0.8); /* Tabel sedikit transparan */
+    margin-top: 20px;
 }
 th, td {
     border: 1px solid #333;
@@ -269,61 +297,36 @@ th {
 }
 .form-add-saldo > div {
     flex: 1;
-    }
-
-/* styles/main.css (Ganti/Tambahkan gaya ini) */
-
-.navigation-section {
-    display: grid; /* Menggunakan Grid Layout */
-    /* Membuat 4 kolom fleksibel, minimal 200px, lalu membesar rata */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 20px; /* Jarak antar kotak */
-    padding: 0 50px;
-    max-width: 1200px;
-    margin: 40px auto; /* Jarak atas/bawah dan tengahkan */
 }
 
-/* Hapus 'flex: 1;' dari nav-box jika ada, karena grid menanganinya */
-.nav-box {
-    background-color: var(--color-dark-gray);
-    padding: 25px;
-    border-radius: 10px;
+/* Footer */
+.footer {
     text-align: center;
-    /* flex: 1; */ /* <-- HAPUS BARIS INI JIKA ADA */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--color-text-light);
-    border: 1px solid transparent;
-}
-.nav-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 188, 212, 0.3);
-    border-color: var(--color-accent);
-}
-.nav-box i {
-    font-size: 2.5em;
-    color: var(--color-accent);
-    margin-bottom: 10px;
-}
-.nav-box h4 {
-    margin: 0;
-    font-size: 1.1em;
+    padding: 20px;
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 50px;
+    border-top: 1px solid #1f1f1f;
 }
 
-/* HAPUS MEDIA QUERY INI JIKA ADA (Grid auto-fit sudah responsif) */
-/* @media (max-width: 768px) {
-    .navigation-section {
-        flex-direction: column; 
+/* Responsif untuk Profil */
+@media (max-width: 768px) {
+    .profile-section {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 20px;
     }
-} 
-*/
-
-/* Penyesuaian agar konten terlihat jelas di atas galaxy */
-.container-card {
-    background-color: rgba(10, 10, 20, 0.85); /* Warna card lebih gelap dan transparan */
-    backdrop-filter: blur(8px); /* Efek blur yang lebih kuat untuk "glassmorphism" */
-    border: 1px solid rgba(0, 188, 212, 0.3); /* Sedikit border aksen */
+     .profile-pic {
+        margin-bottom: 15px;
+     }
+    .navigation-section {
+        padding: 0 20px; /* Kurangi padding samping di mobile */
+    }
+    .admin-container {
+        padding: 20px; /* Kurangi padding admin di mobile */
+    }
+    .form-add-saldo {
+        flex-direction: column; /* Tumpuk form add saldo di mobile */
+        align-items: stretch;
+    }
 }
-
-/* ... (Gaya lainnya tetap sama) ... */
