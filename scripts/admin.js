@@ -6,6 +6,9 @@ const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 let userToken = localStorage.getItem('userToken'); 
 let currentAdmin = JSON.parse(localStorage.getItem('loggedInUser'));
 
+// --- Setup Elements & Helpers ---
+const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+
 const adminUsernameElem = document.getElementById('admin-username');
 const userTableBody = document.querySelector('#userTable tbody');
 const productTableBody = document.querySelector('#productTable tbody');
@@ -14,9 +17,9 @@ const addSaldoForm = document.getElementById('addSaldoForm');
 const postProductForm = document.getElementById('postProductForm');
 const addStockForm = document.getElementById('addStockForm'); 
 const stockProductSelect = document.getElementById('stock-product-id'); 
+const postInfoForm = document.getElementById('postInfoForm'); 
 const logoutBtn = document.getElementById('logout-btn');
 
-const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
 // --- 1. SETUP DAN VALIDASI ADMIN ---
 if (!currentAdmin || !currentAdmin.isAdmin || !userToken) {
@@ -58,11 +61,13 @@ renderUserTable();
 
 async function loadProductSelect() {
     try {
+        // Ambil data produk menggunakan token admin
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
         const data = await response.json();
-        const products = data.products || [];
+        // BUG FIX: Gunakan data.products yang dikirim dari backend
+        const products = data.products || []; 
 
         stockProductSelect.innerHTML = '<option value="" disabled selected>-- Pilih Produk --</option>';
         products.forEach(p => {
@@ -72,7 +77,10 @@ async function loadProductSelect() {
             stockProductSelect.appendChild(option);
         });
         return products;
-    } catch (error) { console.error('Gagal memuat produk:', error); return []; }
+    } catch (error) { 
+        console.error('Gagal memuat produk:', error); 
+        return []; 
+    }
 }
 
 async function renderProductTable() {
@@ -98,7 +106,7 @@ renderProductTable();
 
 
 async function deleteProduct(id, name) {
-    if (!confirm(`Yakin ingin menghapus produk: ${name}? Menghapus produk TIDAK menghapus item stok unik yang sudah ada di database.`)) return;
+    if (!confirm(`Yakin ingin menghapus produk: ${name}? Ini hanya menghapus definisi produk, bukan item stok unik yang sudah ada.`)) return;
 
     try {
         const response = await fetch(`${API_DATA_URL}/admin/products/${id}`, {
@@ -191,8 +199,39 @@ addStockForm.addEventListener('submit', async (e) => {
 
 
 // --- 6. LOGIKA KELOLA INFORMASI ---
+postInfoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById('info-title').value.trim();
+    const content = document.getElementById('info-content').value.trim();
+
+    try {
+        const response = await fetch(`${API_DATA_URL}/admin/info`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${userToken}` 
+            },
+            body: JSON.stringify({ title, content }),
+        });
+        
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message);
+            postInfoForm.reset();
+            renderInfoTable(); // Perbarui tampilan tabel informasi
+        } else {
+            alert(`Gagal memposting informasi: ${data.message || response.statusText}`);
+        }
+    } catch (error) {
+        alert('Kesalahan koneksi saat memposting informasi.');
+    }
+});
+
 async function renderInfoTable() {
     try {
+        // Ambil data dari endpoint dashboard-data (yang juga mengembalikan info)
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
@@ -200,7 +239,7 @@ async function renderInfoTable() {
         const info = data.information || [];
         
         infoTableBody.innerHTML = '';
-
+        
         info.forEach(item => {
             const row = infoTableBody.insertRow();
             row.insertCell(0).textContent = item.title;
@@ -208,7 +247,7 @@ async function renderInfoTable() {
 
             const deleteCell = row.insertCell(2);
             const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Hapus (WIP)'; // WIP: Work In Progress
+            deleteBtn.textContent = 'Hapus (WIP)'; 
             deleteBtn.className = 'btn-primary';
             deleteBtn.style.backgroundColor = 'red';
             deleteBtn.onclick = () => alert('Fungsi hapus informasi belum diimplementasikan di backend!');
