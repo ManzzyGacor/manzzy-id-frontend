@@ -2,12 +2,20 @@
 
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
-const API_AUTH_URL = 'https://manzzy-id-backend.vercel.app/api/auth';
 
 let userToken = localStorage.getItem('userToken'); 
 let userData = JSON.parse(localStorage.getItem('loggedInUser'));
 
-// --- Setup Elements ---
+// --- Setup Elements & Helpers ---
+const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+
+const logoutUser = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'index.html';
+};
+
+// ... (Setup Elements di bagian atas) ...
 const userSaldoElem = document.getElementById('user-saldo');
 const userTransaksiElem = document.getElementById('user-transaksi');
 const isiSaldoForm = document.getElementById('isiSaldoForm');
@@ -19,15 +27,9 @@ const welcomeMenuText = document.getElementById('welcome-menu-item');
 const hamburgerMenu = document.getElementById('hamburger-menu');
 const navLinks = document.getElementById('nav-links');
 const adminLink = document.getElementById('admin-link');
+const purchaseModal = document.getElementById('purchase-modal');
+const purchaseForm = document.getElementById('purchaseForm');
 
-// --- Helpers ---
-const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
-
-const logoutUser = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'index.html';
-};
 
 // --- Cek Status & Validasi Awal ---
 if (!userData || !userToken) {
@@ -38,7 +40,8 @@ if (!userData || !userToken) {
 welcomeUsernameElem.textContent = userData.username;
 welcomeMenuText.textContent = `Hai, ${userData.username}`;
 
-// --- LOGIKA HAMBURGER MENU ---
+
+// --- LOGIKA HAMBURGER MENU (Tetap Sama) ---
 hamburgerMenu.addEventListener('click', () => {
     hamburgerMenu.classList.toggle('active');
     navLinks.classList.toggle('active');
@@ -55,11 +58,9 @@ if (!userData.isAdmin) {
     adminLink.href = 'admin.html';
 }
 
-// --- CORE FUNCTIONS ---
 
-/**
- * Mengambil dan merender semua data dashboard (Saldo, Transaksi, Produk, Info)
- */
+// --- CORE FUNCTIONS (Mengambil Data dari API) ---
+
 async function fetchAndRenderDashboard() {
     const userToken = localStorage.getItem('userToken');
     if (!userToken) return;
@@ -73,10 +74,10 @@ async function fetchAndRenderDashboard() {
             const data = await response.json();
             
             // 1. Update Saldo & Transaksi
-            userSaldoElem.textContent = formatRupiah(data.saldo);
-            userTransaksiElem.textContent = data.transaksi;
+            userSaldoElem.textContent = formatRupiah(data.saldo || 0);
+            userTransaksiElem.textContent = data.transaksi || 0; 
 
-            // Update local user data
+            // Update local user data untuk digunakan di logic frontend
             userData.saldo = data.saldo;
             userData.transaksi = data.transaksi;
             localStorage.setItem('loggedInUser', JSON.stringify(userData));
@@ -97,7 +98,8 @@ async function fetchAndRenderDashboard() {
         console.error('Koneksi gagal saat mengambil data user:', error);
     }
 }
-fetchAndRenderDashboard();
+fetchAndRenderDashboard(); 
+
 
 // --- RENDERING FUNCTIONS ---
 
@@ -117,7 +119,7 @@ function renderProductList(products) {
             <img src="${product.imageURL}" alt="${product.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 15px;">
             <h3 style="color: var(--color-accent);">${product.name}</h3>
             <p style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">${formatRupiah(product.price)}</p>
-            <p style="font-size: 0.9em; color: #aaa; flex-grow: 1;">Stok Hitungan: ${product.stock} item</p>
+            <p style="font-size: 0.9em; color: #aaa; flex-grow: 1;">Stok Unik: ${product.stock} item</p>
             <button class="btn-primary" 
                     onclick="openModal(
                         '${product._id}', 
@@ -159,9 +161,6 @@ function renderAdminInfo(infoList) {
 
 
 // --- MODAL LOGIC (Pembelian) ---
-
-const purchaseModal = document.getElementById('purchase-modal');
-const purchaseForm = document.getElementById('purchaseForm');
 
 window.openModal = function(id, name, price, desc, img) {
     document.getElementById('modal-product-id').value = id;
@@ -231,7 +230,6 @@ purchaseForm.addEventListener('submit', async (e) => {
 // --- LAIN-LAIN ---
 
 window.showIsiSaldoForm = function() {
-    // ... (Logika showIsiSaldoForm tetap sama)
     const formCard = document.getElementById('card-isi-saldo');
     formCard.style.display = 'block';
     formCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -254,103 +252,4 @@ isiSaldoForm.addEventListener('submit', (e) => {
 
 logoutBtn.addEventListener('click', () => {
     logoutUser();
-});
-function renderProducts() {
-    const productsToRender = getProducts();
-
-    productList.innerHTML = productsToRender.map(product => `
-        <div class="product-card">
-            <img src="${product.imageURL}" alt="Foto Produk" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 15px; border: 1px solid #333;">
-            <h3 style="color: var(--color-accent);">${product.name}</h3>
-            <p style="font-size: 0.9em; margin: 10px 0; flex-grow: 1;">${product.desc.substring(0, 100)}...</p>
-            <p style="font-weight: 700; margin-bottom: 15px;">Harga: Rp ${product.price.toLocaleString('id-ID')}</p>
-            <button class="btn-primary" onclick="buyProduct(${product.id}, ${product.price})" style="margin-top: auto;">BELI SEKARANG</button>
-        </div>
-    `).join('');
-}
-renderProducts();
-
-window.buyProduct = function(id, price) {
-    alert("Fungsi pembelian masih dalam simulasi. Saldo Anda saat ini: Rp " + userData.saldo.toLocaleString('id-ID'));
-    // Pembelian yang sesungguhnya memerlukan endpoint API baru
-};
-
-const ADMIN_INFO = [
-    { date: '23 Okt 2025', title: 'Maintenance Server', content: 'Server akan di maintenance pada pukul 03.00-05.00 WIB. Transaksi akan ditunda.' },
-    { date: '20 Okt 2025', title: 'Promo Akhir Bulan', content: 'Nikmati diskon 20% untuk semua produk minggu ini!' }
-];
-
-function renderAdminInfo() {
-    adminInfoContainer.innerHTML = ADMIN_INFO.map(info => `
-        <div style="border-bottom: 1px dashed #333; padding: 15px 0;">
-            <p style="color: var(--color-accent); font-weight: 600;">[${info.date}] ${info.title}</p>
-            <p style="font-size: 0.9em;">${info.content}</p>
-        </div>
-    `).join('');
-}
-renderAdminInfo();
-
-const purchaseForm = document.getElementById('purchaseForm');
-
-purchaseForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const productId = document.getElementById('modal-product-id').value;
-    const quantity = parseInt(document.getElementById('quantity').value);
-
-    // Validasi sederhana
-    if (quantity <= 0 || isNaN(quantity)) {
-        alert("Jumlah pembelian tidak valid.");
-        return;
-    }
-
-    if (!confirm(`Yakin beli ${quantity}x produk ini? Saldo Anda akan dipotong.`)) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_DATA_URL}/purchase`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`,
-            },
-            body: JSON.stringify({ productId, quantity }),
-        });
-        
-        const data = await response.json();
-
-        if (response.ok) {
-            updateDashboard(); // Perbarui saldo
-            closeModal();
-            
-            // Arahkan ke halaman invoice
-            window.location.href = `invoice.html?id=${data.invoice.invoiceNumber}`;
-
-        } else {
-            alert(`Pembelian Gagal: ${data.message}`);
-        }
-
-    } catch (error) {
-        alert('Terjadi kesalahan koneksi server saat memproses pembelian.');
-    }
-});
-
-// ... (logoutBtn.addEventListener tetap sama) ...
-
-// --- LOGIKA FORM DAN LOGOUT ---
-isiSaldoForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const jumlah = parseInt(isiSaldoForm.jumlah.value);
-    
-    alert(`Permintaan isi saldo sebesar Rp ${jumlah.toLocaleString('id-ID')} berhasil dicatat! Harap tunggu konfirmasi dari Admin.`);
-    isiSaldoForm.reset();
-    hideIsiSaldoForm();
-});
-
-logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('loggedInUser');
-    alert('Anda berhasil logout.');
-    window.location.href = 'index.html';
 });
