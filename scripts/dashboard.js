@@ -60,7 +60,6 @@ if (!userData.isAdmin) {
 
 
 // --- CORE FUNCTIONS (Mengambil Data dari API) ---
-
 async function fetchAndRenderDashboard() {
     const userToken = localStorage.getItem('userToken');
     if (!userToken) return;
@@ -73,11 +72,14 @@ async function fetchAndRenderDashboard() {
         if (response.ok) {
             const data = await response.json();
             
-            // 1. Update Saldo & Transaksi
-            userSaldoElem.textContent = formatRupiah(data.saldo || 0);
-            userTransaksiElem.textContent = data.transaksi || 0; 
+            // 1. Update Profile Section (BARU)
+            document.getElementById('profile-username').textContent = data.username || '[Username]';
+            document.getElementById('profile-saldo').textContent = formatRupiah(data.saldo || 0);
 
-            // Update local user data untuk digunakan di logic frontend
+            // Hapus update saldo & transaksi lama jika masih ada
+            // document.getElementById('user-saldo').textContent = formatRupiah(data.saldo || 0);
+            // document.getElementById('user-transaksi').textContent = data.transaksi || 0; 
+
             userData.saldo = data.saldo;
             userData.transaksi = data.transaksi;
             localStorage.setItem('loggedInUser', JSON.stringify(userData));
@@ -93,13 +95,17 @@ async function fetchAndRenderDashboard() {
             logoutUser();
         } else {
             console.error('Gagal mengambil data dashboard:', response.statusText);
+            // Tampilkan pesan error di profile jika fetch gagal
+            document.getElementById('profile-username').textContent = 'Error';
+            document.getElementById('profile-saldo').textContent = 'Gagal Muat';
         }
     } catch (error) {
         console.error('Koneksi gagal saat mengambil data user:', error);
+        document.getElementById('profile-username').textContent = 'Error Koneksi';
+        document.getElementById('profile-saldo').textContent = 'Gagal Muat';
     }
 }
-fetchAndRenderDashboard(); 
-
+fetchAndRenderDashboard(); // JALANKAN PERTAMA KALI
 
 // --- RENDERING FUNCTIONS ---
 
