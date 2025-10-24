@@ -189,14 +189,24 @@ window.closeModal = function() {
 };
 
 
-// --- PEMBELIAN LOGIC (HANDLE SUBMIT) ---
+// scripts/dashboard.js (Hanya bagian PEMBELIAN LOGIC)
+
+// ... (Di bagian LOGIKA PEMBELIAN) ...
+
 purchaseForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const productId = document.getElementById('modal-product-id').value;
     const quantity = parseInt(document.getElementById('quantity').value);
+    const productName = document.getElementById('modal-product-name').textContent; // Ambil nama produk
+    const totalCost = parseFloat(document.getElementById('total-cost').textContent.replace(/[^\d]/g, '')); // Ambil total biaya
 
     if (quantity <= 0 || isNaN(quantity)) return alert('Jumlah pembelian tidak valid.');
+
+    // Konfirmasi sebelum kirim ke API
+    if (!confirm(`Yakin beli ${quantity}x ${productName} dengan total biaya ${formatRupiah(totalCost)}? Saldo Anda akan dipotong.`)) {
+        return;
+    }
 
     try {
         const response = await fetch(`${API_DATA_URL}/purchase`, {
@@ -211,11 +221,20 @@ purchaseForm.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            alert(`Pembelian Berhasil! ${data.message}`);
+            alert(`Pembelian Berhasil! ${data.message}\nAnda akan diarahkan ke WhatsApp untuk konfirmasi.`);
             closeModal();
-            fetchAndRenderDashboard(); 
-            // Arahkan ke halaman invoice
-            window.location.href = `invoice.html?id=${data.invoice.invoiceNumber}`;
+            fetchAndRenderDashboard(); // Tetap update saldo di background
+            
+            // --- REDIRECT KE WHATSAPP ---
+            const waNumber = "62895605053911"; // Nomor WA Tujuan
+            const message = encodeURIComponent(
+                `Halo Admin Manzzy ID,\n\nSaya ${userData.username} baru saja melakukan pembelian:\nProduk: ${productName}\nJumlah: ${quantity}\nTotal Harga: ${formatRupiah(totalCost)}\n\nMohon konfirmasi pesanan saya.`
+            );
+            const waLink = `https://wa.me/${waNumber}?text=${message}`;
+            
+            // Arahkan pengguna ke WhatsApp
+            window.location.href = waLink; 
+            // --------------------------
 
         } else {
             alert(`Pembelian Gagal: ${data.message}`);
@@ -223,6 +242,7 @@ purchaseForm.addEventListener('submit', async (e) => {
 
     } catch (error) {
         alert('Kesalahan koneksi saat memproses pembelian.');
+        console.error("Purchase Error:", error);
     }
 });
 
