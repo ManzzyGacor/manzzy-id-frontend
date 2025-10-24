@@ -162,14 +162,16 @@ select {
 
 /* --- Gaya Dashboard Spesifik --- */
 
-/* Profile Section */
+/* styles/main.css */
+
 .profile-section {
     display: flex;
     align-items: center;
-    background-color: rgba(30, 30, 50, 0.8);
+    background-color: rgba(30, 30, 50, 0.8); 
     padding: 25px;
     border-radius: 12px;
-    margin: 30px 50px;
+    /* INI PENYEBABNYA: '30px' di awal adalah margin atas */
+    margin: 30px 50px; 
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
