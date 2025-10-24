@@ -1,6 +1,6 @@
-// scripts/admin.js (Versi API - Backend MongoDB)
+// scripts/admin.js (VERSI TERBARU - Full API Integration & CRUD)
 
-// GANTI DENGAN URL VERCEL API ANDA SETELAH DEPLOYMENT!
+// GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 
 let userToken = localStorage.getItem('userToken'); 
@@ -12,10 +12,11 @@ const productTableBody = document.querySelector('#productTable tbody');
 const infoTableBody = document.querySelector('#infoTable tbody');
 const addSaldoForm = document.getElementById('addSaldoForm');
 const postProductForm = document.getElementById('postProductForm');
-const addStockForm = document.getElementById('addStockForm'); // BARU
-const stockProductSelect = document.getElementById('stock-product-id'); // BARU
+const addStockForm = document.getElementById('addStockForm'); 
+const stockProductSelect = document.getElementById('stock-product-id'); 
 const logoutBtn = document.getElementById('logout-btn');
 
+const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
 // --- 1. SETUP DAN VALIDASI ADMIN ---
 if (!currentAdmin || !currentAdmin.isAdmin || !userToken) {
@@ -26,12 +27,12 @@ adminUsernameElem.textContent = currentAdmin.username;
 
 
 // --- 2. LOGIKA USER TABLE ---
-// (Kode renderUserTable tetap sama)
 async function renderUserTable() {
     try {
         const response = await fetch(`${API_DATA_URL}/admin/users`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
+        
         if (response.ok) {
             const users = await response.json();
             userTableBody.innerHTML = ''; 
@@ -39,13 +40,12 @@ async function renderUserTable() {
             users.forEach(user => {
                 const row = userTableBody.insertRow();
                 row.insertCell(0).textContent = user.username;
+                
                 const statusCell = row.insertCell(1);
                 statusCell.textContent = user.isAdmin ? 'ADMIN' : 'USER';
                 statusCell.style.color = user.isAdmin ? '#ff0000' : 'var(--color-text-light)';
-                const saldoCell = row.insertCell(2);
-                saldoCell.textContent = new Intl.NumberFormat('id-ID', {
-                    style: 'currency', currency: 'IDR', minimumFractionDigits: 2,
-                }).format(user.saldo);
+
+                row.insertCell(2).textContent = formatRupiah(user.saldo);
                 row.insertCell(3).textContent = user.transaksi;
             });
         }
@@ -68,7 +68,7 @@ async function loadProductSelect() {
         products.forEach(p => {
             const option = document.createElement('option');
             option.value = p._id;
-            option.textContent = `${p.name} (Stok: ${p.stock})`;
+            option.textContent = `${p.name} (Stok Unik: ${p.stock})`;
             stockProductSelect.appendChild(option);
         });
         return products;
@@ -82,7 +82,7 @@ async function renderProductTable() {
     products.forEach(product => {
         const row = productTableBody.insertRow();
         row.insertCell(0).textContent = product.name;
-        row.insertCell(1).textContent = `Rp ${product.price.toLocaleString('id-ID')}`;
+        row.insertCell(1).textContent = formatRupiah(product.price);
         row.insertCell(2).textContent = product.stock;
 
         const deleteCell = row.insertCell(3);
@@ -97,9 +97,8 @@ async function renderProductTable() {
 renderProductTable(); 
 
 
-// Endpoint untuk DELETE
 async function deleteProduct(id, name) {
-    if (!confirm(`Yakin ingin menghapus produk: ${name}? Menghapus produk TIDAK menghapus item stok unik yang sudah ada.`)) return;
+    if (!confirm(`Yakin ingin menghapus produk: ${name}? Menghapus produk TIDAK menghapus item stok unik yang sudah ada di database.`)) return;
 
     try {
         const response = await fetch(`${API_DATA_URL}/admin/products/${id}`, {
@@ -135,7 +134,7 @@ postProductForm.addEventListener('submit', async (e) => {
         const response = await fetch(`${API_DATA_URL}/admin/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
-            body: JSON.stringify({ name, price, description: desc, imageURL, stock: 0 }), // Stock awal selalu 0
+            body: JSON.stringify({ name, price, description: desc, imageURL }),
         });
         
         const data = await response.json();
@@ -143,11 +142,14 @@ postProductForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert(data.message + " Sekarang tambahkan stok item unik di bagian bawah.");
             postProductForm.reset();
-            renderProductTable();
+            renderProductTable(); 
+            loadProductSelect(); 
         } else {
-            alert(`Gagal memposting produk: ${data.message}`);
+            alert(`Gagal memposting produk: ${data.message || response.statusText}`);
         }
-    } catch (error) { alert('Kesalahan koneksi saat memposting produk.'); }
+    } catch (error) { 
+        alert('Kesalahan koneksi saat memposting produk.'); 
+    }
 });
 
 
@@ -160,7 +162,6 @@ addStockForm.addEventListener('submit', async (e) => {
     
     if (!productId || !itemsData) return alert("Pilih produk dan masukkan data item unik.");
 
-    // Pisahkan item berdasarkan baris baru dan filter baris kosong
     const items = itemsData.split('\n').map(item => item.trim()).filter(item => item.length > 0);
 
     if (items.length === 0) return alert("Masukkan setidaknya satu item unik.");
@@ -180,7 +181,7 @@ addStockForm.addEventListener('submit', async (e) => {
             renderProductTable();
             loadProductSelect(); 
         } else {
-            alert(`Gagal menambah stok: ${data.message}`);
+            alert(`Gagal menambah stok: ${data.message || response.statusText}`);
         }
 
     } catch (error) {
@@ -191,7 +192,6 @@ addStockForm.addEventListener('submit', async (e) => {
 
 // --- 6. LOGIKA KELOLA INFORMASI ---
 async function renderInfoTable() {
-    // ... (Logika renderInfoTable tetap sama, gunakan data dari endpoint dashboard-data) ...
     try {
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
@@ -208,7 +208,7 @@ async function renderInfoTable() {
 
             const deleteCell = row.insertCell(2);
             const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Hapus';
+            deleteBtn.textContent = 'Hapus (WIP)'; // WIP: Work In Progress
             deleteBtn.className = 'btn-primary';
             deleteBtn.style.backgroundColor = 'red';
             deleteBtn.onclick = () => alert('Fungsi hapus informasi belum diimplementasikan di backend!');
@@ -217,11 +217,11 @@ async function renderInfoTable() {
 
     } catch (error) { console.error('Error fetching info data:', error); }
 }
-renderInfoTable(); // Jalankan
+renderInfoTable();
 
-// --- LOGIKA FORM ADD SALDO (Tetap Sama) ---
+
+// --- 7. LOGIKA FORM ADD SALDO ---
 addSaldoForm.addEventListener('submit', async (e) => {
-    // ... (Kode fetch API add-saldo tetap sama) ...
     e.preventDefault();
     const targetUsername = document.getElementById('target-username').value.trim();
     const amount = parseInt(document.getElementById('amount-add').value);
@@ -248,7 +248,7 @@ addSaldoForm.addEventListener('submit', async (e) => {
 });
 
 
-// --- LOGIKA LOGOUT ADMIN (Tetap Sama) ---
+// --- LOGIKA LOGOUT ADMIN ---
 logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('loggedInUser');
