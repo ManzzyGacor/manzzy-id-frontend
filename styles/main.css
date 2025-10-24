@@ -23,9 +23,22 @@ body {
     line-height: 1.6;
 }
 
+/* --- Galaxy Animation (Starfield) --- */
+#star-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10; /* Pastikan di belakang semua konten */
+}
+
 /* --- Gaya Card Umum --- */
 .container-card {
-    background-color: var(--color-dark-gray);
+    /* Menambahkan transparansi dan blur untuk efek Galaxy Glassmorphism */
+    background-color: rgba(26, 26, 26, 0.85); 
+    backdrop-filter: blur(5px); 
+    
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 0 20px var(--color-shadow);
@@ -95,14 +108,29 @@ input:focus, textarea:focus {
     box-shadow: 0 0 50px rgba(0, 188, 212, 0.4); 
 }
 
+/* Modifikasi Gaya Dashboard Grid dan Info Card (Untuk Persegi Panjang) */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px; 
+    padding: 30px 50px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+}
+
+.info-card {
+    padding: 25px; /* Mengurangi padding vertikal untuk tampilan persegi panjang */
+    text-align: center;
+}
+
 .info-card h2 {
-    font-size: 1.2em; 
+    font-size: 1.1em; /* Mengurangi ukuran judul card */
     margin-top: 10px;
     color: var(--color-accent);
 }
 
 .info-card p {
-    font-size: 2.5em !important; 
+    font-size: 2em !important; /* Mengurangi ukuran Saldo/Transaksi dari 2.5em */
     font-weight: 700;
 }
 
@@ -209,6 +237,8 @@ input:focus, textarea:focus {
 }
 .admin-container {
     padding: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 .data-section {
     margin-bottom: 40px;
@@ -239,4 +269,4 @@ th {
 }
 .form-add-saldo > div {
     flex: 1;
-}
+    }
