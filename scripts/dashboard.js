@@ -188,22 +188,16 @@ window.closeModal = function() {
     purchaseModal.style.display = 'none';
 };
 
-
-// scripts/dashboard.js (Hanya bagian PEMBELIAN LOGIC)
-
-// ... (Di bagian LOGIKA PEMBELIAN) ...
-
 purchaseForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const productId = document.getElementById('modal-product-id').value;
     const quantity = parseInt(document.getElementById('quantity').value);
-    const productName = document.getElementById('modal-product-name').textContent; // Ambil nama produk
-    const totalCost = parseFloat(document.getElementById('total-cost').textContent.replace(/[^\d]/g, '')); // Ambil total biaya
+    const productName = document.getElementById('modal-product-name').textContent;
+    const totalCost = parseFloat(document.getElementById('total-cost').textContent.replace(/[^\d]/g, ''));
 
     if (quantity <= 0 || isNaN(quantity)) return alert('Jumlah pembelian tidak valid.');
 
-    // Konfirmasi sebelum kirim ke API
     if (!confirm(`Yakin beli ${quantity}x ${productName} dengan total biaya ${formatRupiah(totalCost)}? Saldo Anda akan dipotong.`)) {
         return;
     }
@@ -221,20 +215,34 @@ purchaseForm.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            alert(`Pembelian Berhasil! ${data.message}\nAnda akan diarahkan ke WhatsApp untuk konfirmasi.`);
+            // 1. Tutup modal pembelian & update data
             closeModal();
-            fetchAndRenderDashboard(); // Tetap update saldo di background
+            fetchAndRenderDashboard(); // Update saldo & produk
             
-            // --- REDIRECT KE WHATSAPP ---
-            const waNumber = "62895605053911"; // Nomor WA Tujuan
+            // 2. Siapkan link WhatsApp
+            const waNumber = "62895605053911"; 
             const message = encodeURIComponent(
-                `Halo Admin Manzzy ID,\n\nSaya ${userData.username} baru saja melakukan pembelian:\nProduk: ${productName}\nJumlah: ${quantity}\nTotal Harga: ${formatRupiah(totalCost)}\n\nMohon konfirmasi pesanan saya.`
+`*🛒 KONFIRMASI PEMBELIAN - MANZZY ID 🛒*
+
+Halo Admin Manzzy ID,
+
+Saya *${userData.username}* baru saja melakukan pembelian:
+
+*Produk:*
+\`\`\` ${productName} \`\`\`
+*Jumlah:* ${quantity} item
+*Total Harga:* *${formatRupiah(totalCost)}*
+
+Mohon segera diproses. Terima kasih! 🙏`
             );
             const waLink = `https://wa.me/${waNumber}?text=${message}`;
+
+            // 3. Update tombol di Modal Sukses
+            document.getElementById('whatsapp-confirm-button').href = waLink;
+            document.getElementById('success-message').textContent = `Stok telah dikurangi. Klik tombol di bawah untuk konfirmasi pesanan ${productName} Anda kepada Admin via WhatsApp.`;
             
-            // Arahkan pengguna ke WhatsApp
-            window.location.href = waLink; 
-            // --------------------------
+            // 4. Tampilkan Modal Sukses
+            document.getElementById('success-modal').style.display = 'block';
 
         } else {
             alert(`Pembelian Gagal: ${data.message}`);
@@ -246,7 +254,9 @@ purchaseForm.addEventListener('submit', async (e) => {
     }
 });
 
-
+window.closeSuccessModal = function() {
+    document.getElementById('success-modal').style.display = 'none';
+};
 // --- LAIN-LAIN ---
 
 window.showIsiSaldoForm = function() {
