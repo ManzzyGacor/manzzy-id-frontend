@@ -163,7 +163,14 @@ select {
 /* --- Gaya Dashboard Spesifik --- */
 
 /* styles/main.css */
-
+.notification {
+    background-color: #2a2a2a;
+    color: var(--color-accent);
+    padding: 15px 50px; /* <-- Ini menambahkan 15px padding atas & bawah */
+    text-align: center;
+    border-bottom: 2px solid var(--color-accent);
+    font-weight: 600;
+}
 .profile-section {
     display: flex;
     align-items: center;
