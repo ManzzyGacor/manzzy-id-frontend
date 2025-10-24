@@ -1,111 +1,141 @@
-// scripts/dashboard.js (VERSI AKHIR - STOK HITUNGAN SEDERHANA)
-
-// GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
-const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
-
-let userToken = localStorage.getItem('userToken'); 
-let userData = JSON.parse(localStorage.getItem('loggedInUser'));
-
-// --- Setup Elements & Helpers ---
-const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
-
-const logoutUser = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'index.html';
-};
-
-const userSaldoElem = document.getElementById('user-saldo');
-const userTransaksiElem = document.getElementById('user-transaksi');
-const isiSaldoForm = document.getElementById('isiSaldoForm');
-const logoutBtn = document.getElementById('logout-btn');
-const productList = document.getElementById('product-list');
-const adminInfoContainer = document.getElementById('admin-info-container');
-const welcomeUsernameElem = document.getElementById('welcome-username');
-const welcomeMenuText = document.getElementById('welcome-menu-item');
-const hamburgerMenu = document.getElementById('hamburger-menu');
-const navLinks = document.getElementById('nav-links');
-const adminLink = document.getElementById('admin-link');
-const purchaseModal = document.getElementById('purchase-modal');
-const purchaseForm = document.getElementById('purchaseForm');
-
-
-// --- Cek Status & Validasi Awal ---
-if (!userData || !userToken) {
-    alert('Anda harus login untuk mengakses Dashboard.');
-    logoutUser();
-}
-// ... (Validasi & Setup UI tetap sama) ...
-welcomeUsernameElem.textContent = userData.username;
-welcomeMenuText.textContent = `Hai, ${userData.username}`;
-
-hamburgerMenu.addEventListener('click', () => {
-    hamburgerMenu.classList.toggle('active');
-    navLinks.classList.toggle('active');
-});
-
-if (!userData.isAdmin) {
-    adminLink.textContent = 'Login Admin';
-    adminLink.href = 'index.html'; 
-    adminLink.addEventListener('click', () => {
-        localStorage.removeItem('loggedInUser'); 
-    });
-} else {
-    adminLink.textContent = 'Admin Panel';
-    adminLink.href = 'admin.html';
-}
-
-
-// --- CORE FUNCTIONS (Mengambil Data dari API) ---
-
-async function fetchAndRenderDashboard() {
-    const userToken = localStorage.getItem('userToken');
-    if (!userToken) return;
-
-    try {
-        const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            
-            // 1. Update Saldo & Transaksi
-            userSaldoElem.textContent = formatRupiah(data.saldo || 0);
-            userTransaksiElem.textContent = data.transaksi || 0; 
-
-            userData.saldo = data.saldo;
-            userData.transaksi = data.transaksi;
-            localStorage.setItem('loggedInUser', JSON.stringify(userData));
-
-            // 2. Render Produk
-            renderProductList(data.products || []); 
-            
-            // 3. Render Informasi Admin
-            renderAdminInfo(data.information || []);
-            
-        } else if (response.status === 401) {
-            alert('Sesi Anda berakhir, silakan login kembali.');
-            logoutUser();
-        } else {
-            console.error('Gagal mengambil data dashboard:', response.statusText);
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manzzy ID Official - Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Tambahan untuk Penempatan dan Responsivitas */
+        .dashboard-grid {
+            /* Gaya ini sudah diatur di main.css agar card menjadi persegi panjang */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-    } catch (error) {
-        console.error('Koneksi gagal saat mengambil data user:', error);
-    }
-}
-fetchAndRenderDashboard(); 
+        .info-card {
+            text-align: center;
+            padding: 25px; /* Padding lebih kecil untuk efek persegi panjang */
+        }
+        .notification {
+            background-color: #2a2a2a;
+            color: var(--color-accent);
+            padding: 15px 50px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-accent);
+            font-weight: 600;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8em;
+            color: #555;
+            margin-top: 50px;
+            border-top: 1px solid #1f1f1f;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="star-canvas"></canvas>
 
+    <nav class="navbar">
+        <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
+        
+        <div class="hamburger-menu" id="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        
+        <ul class="nav-links" id="nav-links">
+            <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
+            <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
+            <li><a href="admin.html" id="admin-link">Login Admin</a></li> 
+            <li><a href="https://wa.me/6281234567890" target="_blank">Kontak Admin</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
+        </ul>
+    </nav>
 
-// --- RENDERING PRODUCTS ---
+    <div class="notification" id="login-notification">
+        Anda login sebagai <span id="welcome-username"></span>
+    </div>
 
-function renderProductList(products) {
-    const productListElement = document.getElementById('product-list');
-    productListElement.innerHTML = '';
+    <div class="dashboard-grid">
+        <div class="container-card info-card" id="card-saldo">
+            <i class="fas fa-wallet icon-large"></i> 
+            <h2>SALDO ANDA</h2>
+            <p id="user-saldo">Rp 0.00</p>
+            <button class="btn-primary" onclick="showIsiSaldoForm()" style="margin-top: 15px;">+ ISI SALDO MANUAL</button>
+        </div>
 
-    if (products.length === 0) {
-        productListElement.innerHTML = `<p>Belum ada produk yang tersedia saat ini.</p>`;
-        return;
+        <div class="container-card info-card">
+            <i class="fas fa-chart-line icon-large"></i> 
+            <h2>TOTAL TRANSAKSI</h2>
+            <p id="user-transaksi">0</p>
+        </div>
+        
+        <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s;"> 
+            <h2>Konfirmasi Isi Saldo</h2>
+            <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
+            <form id="isiSaldoForm">
+                <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
+                <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
+                <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
+            </form>
+            <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
+        </div>
+    </div> 
+
+    <div style="padding: 0 50px; max-width: 1200px; margin: 0 auto;">
+        <h2 style="margin-top: 40px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
+        <div class="product-grid" id="product-list">
+            </div>
+        
+        <h2 style="margin-top: 60px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">INFORMASI TERBARU</h2>
+        <div class="container-card" style="margin-bottom: 50px;">
+            <div id="admin-info-container">
+                </div>
+        </div>
+    </div>
+
+    <div id="purchase-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+        <div class="container-card" style="margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;">
+            <span class="close-btn" onclick="closeModal()" style="position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;">&times;</span>
+            
+            <h2 id="modal-product-name" style="color: var(--color-accent); margin-bottom: 10px;">[Nama Produk]</h2>
+            <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+            <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
+            <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
+
+            <form id="purchaseForm">
+                <input type="hidden" id="modal-product-id">
+                
+                <label for="quantity">Jumlah Pembelian:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
+                
+                <label style="display: block;">Total Biaya:</label>
+                <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
+                
+                <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Manzzy ID Official. All rights reserved.
+    </div>
+
+    <script src="scripts/starfield.js"></script>
+    <script>
+        createStarfield('star-canvas');
+    </script>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>
     }
 
     products.forEach(product => {
