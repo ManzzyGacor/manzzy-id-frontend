@@ -1,7 +1,7 @@
 // scripts/admin.js (Versi API - Backend MongoDB)
 
 // GANTI DENGAN URL VERCEL API ANDA SETELAH DEPLOYMENT!
-const API_DATA_URL = 'http://localhost:5000/api/data';
+const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 
 let userToken = localStorage.getItem('userToken'); 
 let currentAdmin = JSON.parse(localStorage.getItem('loggedInUser'));
