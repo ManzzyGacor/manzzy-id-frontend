@@ -1,7 +1,7 @@
 // scripts/main.js (Versi API - Backend MongoDB)
 
 // GANTI DENGAN URL VERCEL API ANDA SETELAH DEPLOYMENT!
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'https://manzzy-id-backend.vercel.app/api/auth';
 
 const loginCard = document.getElementById('login-form-card');
 const registerCard = document.getElementById('register-form-card');
