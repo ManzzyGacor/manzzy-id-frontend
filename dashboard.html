@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manzzy ID Official - Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px;
+        }
+        .info-card {
+            text-align: center;
+            padding: 30px;
+        }
+        .notification {
+            background-color: #2a2a2a;
+            color: var(--color-accent);
+            padding: 15px 50px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-accent);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
+        
+        <div class="hamburger-menu" id="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        
+        <ul class="nav-links" id="nav-links">
+            <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
+            <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
+            <li><a href="admin.html" id="admin-link">Admin Panel</a></li> 
+            <li><a href="https://wa.me/6281234567890" target="_blank">Kontak Admin</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="notification" id="login-notification">
+        Anda login sebagai <span id="welcome-username"></span>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="container-card info-card" id="card-saldo">
+            <i class="fas fa-wallet icon-large"></i> 
+            <h2>SALDO ANDA</h2>
+            <p id="user-saldo">Rp 0.00</p>
+            <button class="btn-primary" onclick="showIsiSaldoForm()" style="margin-top: 15px;">+ ISI SALDO MANUAL</button>
+        </div>
+
+        <div class="container-card info-card">
+            <i class="fas fa-chart-line icon-large"></i> 
+            <h2>TOTAL TRANSAKSI</h2>
+            <p id="user-transaksi">0</p>
+        </div>
+        
+        <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s;"> 
+            <h2>Konfirmasi Isi Saldo</h2>
+            <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
+            <form id="isiSaldoForm">
+                <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
+                <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
+                <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
+            </form>
+            <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
+        </div>
+    </div> 
+
+    <div style="padding: 0 50px;">
+        <h2 style="margin-top: 40px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
+        <div class="product-grid" id="product-list">
+            </div>
+        
+        <h2 style="margin-top: 60px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">INFORMASI TERBARU</h2>
+        <div class="container-card" style="margin-bottom: 50px;">
+            <div id="admin-info-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

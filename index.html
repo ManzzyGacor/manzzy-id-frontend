@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manzzy ID Official - Login</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-card" id="login-form-card" style="transition: opacity 0.3s;">
+        <h1>Manzzy ID Official</h1>
+        <p style="color: var(--color-accent); margin-bottom: 30px;">Login ke Akun Anda</p>
+        
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit" class="btn-primary">LOGIN</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            Belum punya akun? <a href="#" id="showRegister" style="color: var(--color-accent); text-decoration: none;">Daftar di sini</a>
+        </p>
+    </div>
+
+    <div class="container-card" id="register-form-card" style="display: none; opacity: 0; transition: opacity 0.3s;">
+        <h1>Daftar Akun Baru</h1>
+        <p style="color: var(--color-accent); margin-bottom: 30px;">Manzzy ID Official</p>
+        
+        <form id="registerForm">
+            <label for="reg-username">Username:</label>
+            <input type="text" id="reg-username" name="username" required>
+            
+            <label for="reg-password">Password:</label>
+            <input type="password" id="reg-password" name="password" required>
+            
+            <button type="submit" class="btn-primary">DAFTAR</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            Sudah punya akun? <a href="#" id="showLogin" style="color: var(--color-accent); text-decoration: none;">Login</a>
+        </p>
+    </div>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
