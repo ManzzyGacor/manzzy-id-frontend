@@ -1,118 +1,230 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manzzy ID Official - Dashboard</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px;
-        }
-        .info-card {
-            text-align: center;
-            padding: 25px; /* Disesuaikan untuk persegi panjang */
-        }
-        .notification {
-            background-color: #2a2a2a;
-            color: var(--color-accent);
-            padding: 15px 50px;
-            text-align: center;
-            border-bottom: 2px solid var(--color-accent);
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-  
+// scripts/dashboard.js (VERSI AKHIR - STOK HITUNGAN SEDERHANA)
 
-    <nav class="navbar">
-        <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
-        
-        <div class="hamburger-menu" id="hamburger-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        
-        <ul class="nav-links" id="nav-links">
-            <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
-            <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
-            <li><a href="admin.html" id="admin-link">Login Admin</a></li> 
-            <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
-            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
-        </ul>
-    </nav>
+// GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
+const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 
-    <div class="notification" id="login-notification">
-        Anda login sebagai <span id="welcome-username"></span>
-    </div>
+let userToken = localStorage.getItem('userToken'); 
+let userData = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    <div class="dashboard-grid">
-        <div class="container-card info-card" id="card-saldo">
-            <i class="fas fa-wallet icon-large"></i> 
-            <h2>SALDO ANDA</h2>
-            <p id="user-saldo">Rp 0.00</p> 
-            <button class="btn-primary" onclick="showIsiSaldoForm()" style="margin-top: 15px;">+ ISI SALDO MANUAL</button>
-        </div>
+// --- Setup Elements & Helpers ---
+const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
-        <div class="container-card info-card">
-            <i class="fas fa-chart-line icon-large"></i> 
-            <h2>TOTAL TRANSAKSI</h2>
-            <p id="user-transaksi">0</p>
-        </div>
-        
-        <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s;"> 
-            <h2>Konfirmasi Isi Saldo</h2>
-            <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
-            <form id="isiSaldoForm">
-                <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
-                <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
-                <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
-            </form>
-            <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
-        </div>
-    </div> 
+const logoutUser = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'index.html';
+};
 
-    <div style="padding: 0 50px;">
-        <h2 style="margin-top: 40px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
-        <div class="product-grid" id="product-list">
-            </div>
-        
-        <h2 style="margin-top: 60px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">INFORMASI TERBARU</h2>
-        <div class="container-card" style="margin-bottom: 50px;">
-            <div id="admin-info-container">
-                </div>
-        </div>
-    </div>
+const userSaldoElem = document.getElementById('user-saldo');
+const userTransaksiElem = document.getElementById('user-transaksi');
+const isiSaldoForm = document.getElementById('isiSaldoForm');
+const logoutBtn = document.getElementById('logout-btn');
+const productList = document.getElementById('product-list');
+const adminInfoContainer = document.getElementById('admin-info-container');
+const welcomeUsernameElem = document.getElementById('welcome-username');
+const welcomeMenuText = document.getElementById('welcome-menu-item');
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const navLinks = document.getElementById('nav-links');
+const adminLink = document.getElementById('admin-link');
+const purchaseModal = document.getElementById('purchase-modal');
+const purchaseForm = document.getElementById('purchaseForm');
 
-    <div id="purchase-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
-        <div class="container-card" style="margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;">
-            <span class="close-btn" onclick="closeModal()" style="position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;">&times;</span>
+
+// --- Cek Status & Validasi Awal ---
+if (!userData || !userToken) {
+    alert('Anda harus login untuk mengakses Dashboard.');
+    logoutUser();
+}
+// ... (Validasi & Setup UI tetap sama) ...
+welcomeUsernameElem.textContent = userData.username;
+welcomeMenuText.textContent = `Hai, ${userData.username}`;
+
+hamburgerMenu.addEventListener('click', () => {
+    hamburgerMenu.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
+
+if (!userData.isAdmin) {
+    adminLink.textContent = 'Login Admin';
+    adminLink.href = 'index.html'; 
+    adminLink.addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser'); 
+    });
+} else {
+    adminLink.textContent = 'Admin Panel';
+    adminLink.href = 'admin.html';
+}
+
+
+// --- CORE FUNCTIONS (Mengambil Data dari API) ---
+
+async function fetchAndRenderDashboard() {
+    const userToken = localStorage.getItem('userToken');
+    if (!userToken) return;
+
+    try {
+        const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
+            headers: { 'Authorization': `Bearer ${userToken}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
             
-            <h2 id="modal-product-name" style="color: var(--color-accent); margin-bottom: 10px;">[Nama Produk]</h2>
-            <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
-            <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
-            <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
+            // 1. Update Saldo & Transaksi
+            userSaldoElem.textContent = formatRupiah(data.saldo || 0);
+            userTransaksiElem.textContent = data.transaksi || 0; 
 
-            <form id="purchaseForm">
-                <input type="hidden" id="modal-product-id">
-                
-                <label for="quantity">Jumlah Pembelian:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
-                
-                <label style="display: block;">Total Biaya:</label>
-                <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
-                
-                <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
-            </form>
-        </div>
-    </div>
+            userData.saldo = data.saldo;
+            userData.transaksi = data.transaksi;
+            localStorage.setItem('loggedInUser', JSON.stringify(userData));
 
-    <script src="scripts/dashboard.js"></script>
-</body>
-</html>
+            // 2. Render Produk
+            renderProductList(data.products || []); 
+            
+            // 3. Render Informasi Admin
+            renderAdminInfo(data.information || []);
+            
+        } else if (response.status === 401) {
+            alert('Sesi Anda berakhir, silakan login kembali.');
+            logoutUser();
+        } else {
+            console.error('Gagal mengambil data dashboard:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Koneksi gagal saat mengambil data user:', error);
+    }
+}
+fetchAndRenderDashboard(); 
+
+
+// --- RENDERING PRODUCTS ---
+
+function renderProductList(products) {
+    const productListElement = document.getElementById('product-list');
+    productListElement.innerHTML = '';
+
+    if (products.length === 0) {
+        productListElement.innerHTML = `<p>Belum ada produk yang tersedia saat ini.</p>`;
+        return;
+    }
+
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'container-card product-card';
+        card.innerHTML = `
+            <img src="${product.imageURL}" alt="${product.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 15px;">
+            <h3 style="color: var(--color-accent);">${product.name}</h3>
+            <p style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">${formatRupiah(product.price)}</p>
+            <p style="font-size: 0.9em; color: #aaa; flex-grow: 1;">Stok: ${product.stock} unit</p>
+            <button class="btn-primary" 
+                    onclick="openModal(
+                        '${product._id}', 
+                        '${product.name}', 
+                        ${product.price}, 
+                        '${product.description}', 
+                        '${product.imageURL}')"
+                    style="margin-top: 15px;"
+                    ${product.stock === 0 ? 'disabled style="background-color: #555;"' : ''}>
+                ${product.stock === 0 ? 'STOK HABIS' : 'BELI SEKARANG'}
+            </button>
+        `;
+        productListElement.appendChild(card);
+    });
+}
+
+// ... (renderAdminInfo tetap sama) ...
+
+
+// --- MODAL LOGIC (Pembelian) ---
+
+window.openModal = function(id, name, price, desc, img) {
+    // ... (Logika openModal tetap sama) ...
+    document.getElementById('modal-product-id').value = id;
+    document.getElementById('modal-product-name').textContent = name;
+    document.getElementById('modal-product-image').src = img;
+    document.getElementById('modal-product-desc').textContent = desc;
+    
+    document.getElementById('modal-product-price').textContent = formatRupiah(price);
+    document.getElementById('quantity').value = 1;
+
+    const quantityInput = document.getElementById('quantity');
+    quantityInput.oninput = function() {
+        const q = parseInt(quantityInput.value) || 0;
+        const total = price * q;
+        document.getElementById('total-cost').textContent = formatRupiah(total);
+    };
+    
+    quantityInput.oninput();
+    purchaseModal.style.display = 'block';
+    hamburgerMenu.classList.remove('active'); 
+    navLinks.classList.remove('active');
+};
+
+window.closeModal = function() {
+    purchaseModal.style.display = 'none';
+};
+
+
+// --- PEMBELIAN LOGIC (HANDLE SUBMIT) ---
+purchaseForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const productId = document.getElementById('modal-product-id').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+
+    if (quantity <= 0 || isNaN(quantity)) return alert('Jumlah pembelian tidak valid.');
+
+    try {
+        const response = await fetch(`${API_DATA_URL}/purchase`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ productId, quantity }),
+        });
+        
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(`Pembelian Berhasil! ${data.message}`);
+            closeModal();
+            // Cukup refresh dashboard, tidak ada invoice unik
+            fetchAndRenderDashboard(); 
+
+        } else {
+            alert(`Pembelian Gagal: ${data.message}`);
+        }
+
+    } catch (error) {
+        alert('Kesalahan koneksi saat memproses pembelian.');
+    }
+});
+
+
+// --- LAIN-LAIN ---
+window.showIsiSaldoForm = function() {
+    // ... (Logika showIsiSaldoForm tetap sama)
+    const formCard = document.getElementById('card-isi-saldo');
+    formCard.style.display = 'block';
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    hamburgerMenu.classList.remove('active'); 
+    navLinks.classList.remove('active');
+}
+
+window.hideIsiSaldoForm = function() {
+    document.getElementById('card-isi-saldo').style.display = 'none';
+}
+
+isiSaldoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const jumlah = parseInt(isiSaldoForm.jumlah.value);
+    
+    alert(`Permintaan isi saldo sebesar ${formatRupiah(jumlah)} berhasil dicatat! Harap tunggu konfirmasi Admin.`);
+    isiSaldoForm.reset();
+    window.hideIsiSaldoForm();
+});
+
+logoutBtn.addEventListener('click', () => {
+    logoutUser();
+});
