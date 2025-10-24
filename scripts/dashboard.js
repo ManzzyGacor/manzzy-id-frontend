@@ -2,6 +2,7 @@
 
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
+const API_AUTH_URL = 'https://manzzy-id-backend.vercel.app/api/auth';
 
 let userToken = localStorage.getItem('userToken'); 
 let userData = JSON.parse(localStorage.getItem('loggedInUser'));
