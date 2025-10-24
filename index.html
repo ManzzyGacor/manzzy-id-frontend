@@ -15,9 +15,10 @@
     </style>
 </head>
 <body>
+    <canvas id="star-canvas"></canvas>
 
     <div class="container-card" id="login-form-card" style="transition: opacity 0.3s;">
-        <h1>Manzzy ID Official</h1>
+        <h1 style="color: var(--color-text-light);">Manzzy ID Official</h1>
         <p style="color: var(--color-accent); margin-bottom: 30px;">Login ke Akun Anda</p>
         
         <form id="loginForm">
@@ -36,7 +37,7 @@
     </div>
 
     <div class="container-card" id="register-form-card" style="display: none; opacity: 0; transition: opacity 0.3s;">
-        <h1>Daftar Akun Baru</h1>
+        <h1 style="color: var(--color-text-light);">Daftar Akun Baru</h1>
         <p style="color: var(--color-accent); margin-bottom: 30px;">Manzzy ID Official</p>
         
         <form id="registerForm">
@@ -54,6 +55,10 @@
         </p>
     </div>
 
+    <script src="scripts/starfield.js"></script>
+    <script>
+        createStarfield('star-canvas');
+    </script>
     <script src="scripts/main.js"></script>
 </body>
 </html>
