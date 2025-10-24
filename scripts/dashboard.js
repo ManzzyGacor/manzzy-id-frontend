@@ -142,6 +142,53 @@ function renderAdminInfo() {
 }
 renderAdminInfo();
 
+const purchaseForm = document.getElementById('purchaseForm');
+
+purchaseForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const productId = document.getElementById('modal-product-id').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+
+    // Validasi sederhana
+    if (quantity <= 0 || isNaN(quantity)) {
+        alert("Jumlah pembelian tidak valid.");
+        return;
+    }
+
+    if (!confirm(`Yakin beli ${quantity}x produk ini? Saldo Anda akan dipotong.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_DATA_URL}/purchase`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ productId, quantity }),
+        });
+        
+        const data = await response.json();
+
+        if (response.ok) {
+            updateDashboard(); // Perbarui saldo
+            closeModal();
+            
+            // Arahkan ke halaman invoice
+            window.location.href = `invoice.html?id=${data.invoice.invoiceNumber}`;
+
+        } else {
+            alert(`Pembelian Gagal: ${data.message}`);
+        }
+
+    } catch (error) {
+        alert('Terjadi kesalahan koneksi server saat memproses pembelian.');
+    }
+});
+
+// ... (logoutBtn.addEventListener tetap sama) ...
 
 // --- LOGIKA FORM DAN LOGOUT ---
 isiSaldoForm.addEventListener('submit', (e) => {
