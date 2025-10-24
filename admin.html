@@ -15,6 +15,8 @@
         }
         .admin-container {
             padding: 50px;
+            max-width: 1200px; 
+            margin: 0 auto;
         }
         .data-section {
             margin-bottom: 40px;
@@ -35,6 +37,7 @@
     </style>
 </head>
 <body>
+    <canvas id="star-canvas"></canvas>
 
     <div class="admin-header">
         <h1 style="color: #ffcccc;">PANEL ADMINISTRATOR MANZZY ID</h1>
@@ -61,8 +64,10 @@
         </div>
         
         <div class="data-section">
-            <h2><i class="fas fa-box"></i> POSTING PRODUK BARU</h2>
-            <div class="container-card">
+            <h2><i class="fas fa-box"></i> KELOLA PRODUK & STOK</h2>
+            
+            <div class="container-card" style="margin-bottom: 20px;">
+                <h3>Post Produk Baru (Definisi)</h3>
                 <form id="postProductForm">
                     <label for="product-name">Nama Produk:</label>
                     <input type="text" id="product-name" required>
@@ -71,16 +76,31 @@
                     <input type="number" id="product-price" required min="1000">
 
                     <label for="product-desc">Deskripsi Singkat:</label>
-                    <textarea id="product-desc" style="width: 100%; padding: 10px; border-radius: 6px; background-color: #2c2c2c; color: var(--color-text-light); border: 1px solid #333;" rows="3" required></textarea>
+                    <textarea id="product-desc" rows="3" required></textarea>
 
-                    <label for="product-image">URL Gambar Produk (Simulasi):</label>
+                    <label for="product-image">URL Gambar Produk:</label>
                     <input type="text" id="product-image" value="https://via.placeholder.com/150/ffffff/000000?text=New+Product">
                     
-                    <button type="submit" class="btn-primary" style="background-color: #007bff; margin-top: 15px;">POSTING PRODUK</button>
+                    <button type="submit" class="btn-primary" style="background-color: #007bff; margin-top: 15px;">1. BUAT DEFINISI PRODUK</button>
+                </form>
+            </div>
+
+            <div class="container-card">
+                <h3>2. Tambah Stok Item Unik (Akun/Kode)</h3>
+                <form id="addStockForm">
+                    <label for="stock-product-id">Pilih Produk Target:</label>
+                    <select id="stock-product-id" required style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; background-color: #2c2c2c; color: var(--color-text-light); border: 1px solid #333;">
+                        <option value="" disabled selected>-- Pilih Produk --</option>
+                    </select>
+                    
+                    <label for="stock-items-data">Data Item Unik (Pisahkan setiap item dengan baris baru):</label>
+                    <textarea id="stock-items-data" rows="5" placeholder="Contoh:&#10;user.ml@gmail.com:password123&#10;kode-voucher-XYZ" required></textarea>
+                    
+                    <button type="submit" class="btn-primary" style="background-color: #ff9800; margin-top: 15px;">TAMBAH STOK ITEM</button>
                 </form>
             </div>
         </div>
-
+        
         <div class="data-section">
             <h2><i class="fas fa-users"></i> DAFTAR SELURUH PENGGUNA</h2>
             <table id="userTable">
@@ -97,8 +117,43 @@
             </table>
         </div>
         
+        <div class="data-section">
+            <h2><i class="fas fa-trash"></i> KELOLA & HAPUS PRODUK</h2>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>Nama Produk</th>
+                        <th>Harga</th>
+                        <th>Stok Hitungan</th>
+                        <th>Hapus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+        
+        <div class="data-section">
+            <h2><i class="fas fa-bullhorn"></i> KELOLA INFORMASI</h2>
+            <table id="infoTable">
+                <thead>
+                    <tr>
+                        <th>Judul</th>
+                        <th>Tanggal</th>
+                        <th>Hapus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+        
     </div>
 
+    <script src="scripts/starfield.js"></script>
+    <script>
+        createStarfield('star-canvas');
+    </script>
     <script src="scripts/admin.js"></script>
 </body>
-</html>
+    </html>
