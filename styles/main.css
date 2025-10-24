@@ -271,17 +271,53 @@ th {
     flex: 1;
     }
 
-#star-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -10; /* Pastikan di belakang semua konten */
-    background: linear-gradient(180deg, #00000f 0%, #000000 100%); /* Latar belakang galaxy gelap */
-    /* Opsional: Tambahkan sedikit blur ke canvas jika ingin efek nebula */
-    /* filter: blur(1px); */ 
+/* styles/main.css (Ganti/Tambahkan gaya ini) */
+
+.navigation-section {
+    display: grid; /* Menggunakan Grid Layout */
+    /* Membuat 4 kolom fleksibel, minimal 200px, lalu membesar rata */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px; /* Jarak antar kotak */
+    padding: 0 50px;
+    max-width: 1200px;
+    margin: 40px auto; /* Jarak atas/bawah dan tengahkan */
 }
+
+/* Hapus 'flex: 1;' dari nav-box jika ada, karena grid menanganinya */
+.nav-box {
+    background-color: var(--color-dark-gray);
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    /* flex: 1; */ /* <-- HAPUS BARIS INI JIKA ADA */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-text-light);
+    border: 1px solid transparent;
+}
+.nav-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 188, 212, 0.3);
+    border-color: var(--color-accent);
+}
+.nav-box i {
+    font-size: 2.5em;
+    color: var(--color-accent);
+    margin-bottom: 10px;
+}
+.nav-box h4 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+/* HAPUS MEDIA QUERY INI JIKA ADA (Grid auto-fit sudah responsif) */
+/* @media (max-width: 768px) {
+    .navigation-section {
+        flex-direction: column; 
+    }
+} 
+*/
 
 /* Penyesuaian agar konten terlihat jelas di atas galaxy */
 .container-card {
