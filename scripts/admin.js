@@ -1,4 +1,4 @@
-// scripts/admin.js (VERSI TERBARU - Full API Integration & CRUD)
+// scripts/admin.js (VERSI AKHIR - STOK HITUNGAN SEDERHANA)
 
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
@@ -15,8 +15,8 @@ const productTableBody = document.querySelector('#productTable tbody');
 const infoTableBody = document.querySelector('#infoTable tbody');
 const addSaldoForm = document.getElementById('addSaldoForm');
 const postProductForm = document.getElementById('postProductForm');
-const addStockForm = document.getElementById('addStockForm'); 
-const stockProductSelect = document.getElementById('stock-product-id'); 
+// Hapus: const addStockForm = document.getElementById('addStockForm'); 
+// Hapus: const stockProductSelect = document.getElementById('stock-product-id'); 
 const postInfoForm = document.getElementById('postInfoForm'); 
 const logoutBtn = document.getElementById('logout-btn');
 
@@ -59,10 +59,9 @@ renderUserTable();
 
 // --- 3. LOGIKA KELOLA PRODUK (READ, CREATE, DELETE) ---
 
-// Fungsi yang memuat data produk dan mengisi dropdown
-async function loadProductSelect() {
+// Fungsi ini TIDAK lagi memuat dropdown stok unik
+async function loadProductData() {
     try {
-        // Mengambil data dari endpoint dashboard yang terautentikasi
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
@@ -74,34 +73,22 @@ async function loadProductSelect() {
         }
 
         const data = await response.json();
-        // BUG FIX: Menggunakan data.products dari respons backend
-        const products = data.products || []; 
-
-        // 1. Bersihkan dan Isi Dropdown Stok
-        stockProductSelect.innerHTML = '<option value="" disabled selected>-- Pilih Produk --</option>';
-        products.forEach(p => {
-            const option = document.createElement('option');
-            option.value = p._id;
-            option.textContent = `${p.name} (Stok Unik: ${p.stock})`;
-            stockProductSelect.appendChild(option);
-        });
-        return products;
+        return data.products || []; 
     } catch (error) { 
-        console.error('Gagal memuat produk:', error); 
+        console.error('Gagal memuat data produk:', error); 
         return []; 
     }
 }
 
-// Fungsi yang merender tabel produk
 async function renderProductTable() {
-    const products = await loadProductSelect(); // Mengambil data produk terbaru
+    const products = await loadProductData(); // Mengambil data produk terbaru
     productTableBody.innerHTML = '';
 
     products.forEach(product => {
         const row = productTableBody.insertRow();
         row.insertCell(0).textContent = product.name;
         row.insertCell(1).textContent = formatRupiah(product.price);
-        row.insertCell(2).textContent = product.stock;
+        row.insertCell(2).textContent = product.stock; // Stok Hitungan
 
         const deleteCell = row.insertCell(3);
         const deleteBtn = document.createElement('button');
@@ -116,7 +103,7 @@ renderProductTable();
 
 
 async function deleteProduct(id, name) {
-    if (!confirm(`Yakin ingin menghapus produk: ${name}? Ini hanya menghapus definisi produk, bukan item stok unik yang sudah ada.`)) return;
+    if (!confirm(`Yakin ingin menghapus produk: ${name}?`)) return;
 
     try {
         const response = await fetch(`${API_DATA_URL}/admin/products/${id}`, {
@@ -136,6 +123,7 @@ async function deleteProduct(id, name) {
     }
 }
 
+
 // --- 4. LOGIKA FORM POST PRODUK BARU (CREATE) ---
 postProductForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -144,6 +132,7 @@ postProductForm.addEventListener('submit', async (e) => {
     const price = parseInt(document.getElementById('product-price').value);
     const desc = document.getElementById('product-desc').value.trim();
     const imageURL = document.getElementById('product-image').value.trim();
+    const stock = parseInt(document.getElementById('product-stock-initial').value) || 0; // Mengambil stok awal
     
     if (price <= 0 || isNaN(price)) { alert("Harga tidak valid."); return; }
 
@@ -151,21 +140,15 @@ postProductForm.addEventListener('submit', async (e) => {
         const response = await fetch(`${API_DATA_URL}/admin/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
-            body: JSON.stringify({ name, price, description: desc, imageURL }),
+            body: JSON.stringify({ name, price, description: desc, imageURL, stock }), // Kirim stok awal
         });
         
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.message + " Sekarang tambahkan stok item unik di bagian bawah.");
+            alert(data.message);
             postProductForm.reset();
-            
-            // BUG FIX: Panggil KEDUA fungsi agar dropdown dan tabel terupdate
-            await renderProductTable(); 
-            await loadProductSelect(); 
-            
-            // Opsional: Coba hard refresh dashboard untuk memaksa update cache Vercel
-            alert("Harap refresh Dashboard User (Ctrl+Shift+R) secara manual!");
+            renderProductTable(); // Perbarui tabel
         } else {
             alert(`Gagal memposting produk: ${data.message || response.statusText}`);
         }
@@ -174,49 +157,13 @@ postProductForm.addEventListener('submit', async (e) => {
     }
 });
 
-// ... (Pastikan Anda menggunakan kode loadProductSelect() dan renderProductTable() yang terbaru)
 
-
-// --- 5. LOGIKA FORM TAMBAH STOK UNIK ---
-addStockForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const productId = document.getElementById('stock-product-id').value;
-    const itemsData = document.getElementById('stock-items-data').value.trim();
-    
-    if (!productId || !itemsData) return alert("Pilih produk dan masukkan data item unik.");
-
-    const items = itemsData.split('\n').map(item => item.trim()).filter(item => item.length > 0);
-
-    if (items.length === 0) return alert("Masukkan setidaknya satu item unik.");
-
-    try {
-        const response = await fetch(`${API_DATA_URL}/admin/add-stock-item`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
-            body: JSON.stringify({ productId, items }),
-        });
-        
-        const data = await response.json();
-
-        if (response.ok) {
-            alert(data.message);
-            addStockForm.reset();
-            // BUG FIX: Panggil kedua fungsi render agar dropdown dan tabel terupdate
-            renderProductTable();
-            loadProductSelect(); 
-        } else {
-            alert(`Gagal menambah stok: ${data.message || response.statusText}`);
-        }
-
-    } catch (error) {
-        alert('Kesalahan koneksi saat menambah stok item.');
-    }
-});
+// --- HAPUS LOGIKA STOK UNIK (Tidak ada form 5) ---
 
 
 // --- 6. LOGIKA KELOLA INFORMASI ---
 postInfoForm.addEventListener('submit', async (e) => {
+    // ... (Logika post informasi tetap sama) ...
     e.preventDefault();
     
     const title = document.getElementById('info-title').value.trim();
@@ -247,8 +194,8 @@ postInfoForm.addEventListener('submit', async (e) => {
 });
 
 async function renderInfoTable() {
+    // ... (Logika renderInfoTable tetap sama) ...
     try {
-        // Ambil data dari endpoint dashboard-data (yang juga mengembalikan info)
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
@@ -276,7 +223,7 @@ async function renderInfoTable() {
 renderInfoTable();
 
 
-// --- 7. LOGIKA FORM ADD SALDO ---
+// --- LOGIKA FORM ADD SALDO ---
 addSaldoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const targetUsername = document.getElementById('target-username').value.trim();
