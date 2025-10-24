@@ -59,16 +59,25 @@ renderUserTable();
 
 // --- 3. LOGIKA KELOLA PRODUK (READ, CREATE, DELETE) ---
 
+// Fungsi yang memuat data produk dan mengisi dropdown
 async function loadProductSelect() {
     try {
-        // Ambil data produk menggunakan token admin
+        // Mengambil data dari endpoint dashboard yang terautentikasi
         const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
+        
+        if (response.status === 401) {
+             alert('Sesi Admin telah berakhir. Silakan login kembali.');
+             window.location.href = 'index.html';
+             return [];
+        }
+
         const data = await response.json();
-        // BUG FIX: Gunakan data.products yang dikirim dari backend
+        // BUG FIX: Menggunakan data.products dari respons backend
         const products = data.products || []; 
 
+        // 1. Bersihkan dan Isi Dropdown Stok
         stockProductSelect.innerHTML = '<option value="" disabled selected>-- Pilih Produk --</option>';
         products.forEach(p => {
             const option = document.createElement('option');
@@ -83,8 +92,9 @@ async function loadProductSelect() {
     }
 }
 
+// Fungsi yang merender tabel produk
 async function renderProductTable() {
-    const products = await loadProductSelect();
+    const products = await loadProductSelect(); // Mengambil data produk terbaru
     productTableBody.innerHTML = '';
 
     products.forEach(product => {
@@ -150,6 +160,7 @@ postProductForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert(data.message + " Sekarang tambahkan stok item unik di bagian bawah.");
             postProductForm.reset();
+            // BUG FIX: Panggil kedua fungsi render agar dropdown dan tabel terupdate
             renderProductTable(); 
             loadProductSelect(); 
         } else {
@@ -186,6 +197,7 @@ addStockForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert(data.message);
             addStockForm.reset();
+            // BUG FIX: Panggil kedua fungsi render agar dropdown dan tabel terupdate
             renderProductTable();
             loadProductSelect(); 
         } else {
@@ -220,7 +232,7 @@ postInfoForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert(data.message);
             postInfoForm.reset();
-            renderInfoTable(); // Perbarui tampilan tabel informasi
+            renderInfoTable(); 
         } else {
             alert(`Gagal memposting informasi: ${data.message || response.statusText}`);
         }
