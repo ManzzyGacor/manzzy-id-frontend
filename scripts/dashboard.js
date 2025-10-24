@@ -1,8 +1,8 @@
 // scripts/dashboard.js (Versi API - Backend MongoDB)
 
 // GANTI DENGAN URL VERCEL API ANDA SETELAH DEPLOYMENT!
-const API_DATA_URL = 'http://localhost:5000/api/data';
-const API_AUTH_URL = 'http://localhost:5000/api/auth'; 
+const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
+const API_AUTH_URL = 'https://manzzy-id-backend.vercel.app/api/auth'; 
 
 let userToken = localStorage.getItem('userToken'); 
 let userData = JSON.parse(localStorage.getItem('loggedInUser'));
