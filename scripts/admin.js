@@ -136,7 +136,6 @@ async function deleteProduct(id, name) {
     }
 }
 
-
 // --- 4. LOGIKA FORM POST PRODUK BARU (CREATE) ---
 postProductForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -160,9 +159,13 @@ postProductForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             alert(data.message + " Sekarang tambahkan stok item unik di bagian bawah.");
             postProductForm.reset();
-            // BUG FIX: Panggil kedua fungsi render agar dropdown dan tabel terupdate
-            renderProductTable(); 
-            loadProductSelect(); 
+            
+            // BUG FIX: Panggil KEDUA fungsi agar dropdown dan tabel terupdate
+            await renderProductTable(); 
+            await loadProductSelect(); 
+            
+            // Opsional: Coba hard refresh dashboard untuk memaksa update cache Vercel
+            alert("Harap refresh Dashboard User (Ctrl+Shift+R) secara manual!");
         } else {
             alert(`Gagal memposting produk: ${data.message || response.statusText}`);
         }
@@ -170,6 +173,8 @@ postProductForm.addEventListener('submit', async (e) => {
         alert('Kesalahan koneksi saat memposting produk.'); 
     }
 });
+
+// ... (Pastikan Anda menggunakan kode loadProductSelect() dan renderProductTable() yang terbaru)
 
 
 // --- 5. LOGIKA FORM TAMBAH STOK UNIK ---
