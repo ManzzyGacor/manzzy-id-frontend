@@ -15,7 +15,7 @@
         }
         .info-card {
             text-align: center;
-            padding: 30px;
+            padding: 25px; /* Disesuaikan untuk persegi panjang */
         }
         .notification {
             background-color: #2a2a2a;
@@ -28,6 +28,7 @@
     </style>
 </head>
 <body>
+    <canvas id="star-canvas"></canvas>
 
     <nav class="navbar">
         <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
@@ -41,7 +42,7 @@
         <ul class="nav-links" id="nav-links">
             <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
             <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
-            <li><a href="admin.html" id="admin-link">Admin Panel</a></li> 
+            <li><a href="admin.html" id="admin-link">Login Admin</a></li> 
             <li><a href="https://wa.me/6281234567890" target="_blank">Kontak Admin</a></li>
             <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
         </ul>
@@ -55,7 +56,7 @@
         <div class="container-card info-card" id="card-saldo">
             <i class="fas fa-wallet icon-large"></i> 
             <h2>SALDO ANDA</h2>
-            <p id="user-saldo">Rp 0.00</p>
+            <p id="user-saldo">Rp 0.00</p> 
             <button class="btn-primary" onclick="showIsiSaldoForm()" style="margin-top: 15px;">+ ISI SALDO MANUAL</button>
         </div>
 
@@ -89,6 +90,33 @@
         </div>
     </div>
 
+    <div id="purchase-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+        <div class="container-card" style="margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;">
+            <span class="close-btn" onclick="closeModal()" style="position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;">&times;</span>
+            
+            <h2 id="modal-product-name" style="color: var(--color-accent); margin-bottom: 10px;">[Nama Produk]</h2>
+            <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+            <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
+            <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
+
+            <form id="purchaseForm">
+                <input type="hidden" id="modal-product-id">
+                
+                <label for="quantity">Jumlah Pembelian:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
+                
+                <label style="display: block;">Total Biaya:</label>
+                <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
+                
+                <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scripts/starfield.js"></script>
+    <script>
+        createStarfield('star-canvas');
+    </script>
     <script src="scripts/dashboard.js"></script>
 </body>
 </html>
