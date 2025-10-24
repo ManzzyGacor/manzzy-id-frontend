@@ -1,10 +1,8 @@
-// scripts/starfield.js
+// scripts/starfield.js (VERSI LEBIH CANGGIH & BERWARNA)
 
-// Fungsi untuk membuat Starfield Animation di Canvas
 function createStarfield(canvasId) {
-    // 1. Setup Canvas
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return; // Keluar jika elemen canvas tidak ditemukan
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     let W = window.innerWidth;
@@ -12,75 +10,95 @@ function createStarfield(canvasId) {
     canvas.width = W;
     canvas.height = H;
 
-    const max_stars = 200;
+    // Jumlah bintang yang lebih banyak untuk efek yang lebih padat
+    const num_stars = 500; 
     const stars = [];
 
-    // 2. Objek Star
+    // Fungsi untuk mendapatkan warna bintang secara acak
+    function getRandomStarColor() {
+        const colors = [
+            'rgba(173, 216, 230,',  // Light Blue
+            'rgba(255, 255, 200,',  // Pale Yellow
+            'rgba(255, 160, 120,',  // Light Salmon (for reddish stars)
+            'rgba(200, 180, 255,',  // Light Purple
+            'rgba(255, 255, 255,',  // White
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Objek Star (dengan penambahan kecepatan Z dan warna)
     function Star() {
         this.x = Math.random() * W;
         this.y = Math.random() * H;
-        this.radius = Math.random() * 1.2 + 0.5; // Ukuran bintang
-        this.vx = Math.floor(Math.random() * 50) - 25; // Kecepatan X (untuk pergerakan halus)
-        this.vy = Math.floor(Math.random() * 50) - 25; // Kecepatan Y
-        this.alpha = Math.random(); // Opacity awal
-        this.rotation = Math.random() * 360; 
+        this.z = Math.random() * W; // Kedalaman untuk efek parallax
+        this.radius = Math.random() * 0.8 + 0.5; // Ukuran bintang lebih kecil dan bervariasi
+        this.color = getRandomStarColor();
+        this.alpha = Math.random() * 0.8 + 0.2; // Opacity awal lebih bervariasi
+        this.rotationSpeed = (Math.random() - 0.5) * 0.005; // Kecepatan kedip/rotasi
     }
 
     // Inisialisasi bintang
-    for (let i = 0; i < max_stars; i++) {
+    for (let i = 0; i < num_stars; i++) {
         stars.push(new Star());
     }
 
-    // 3. Fungsi Gambar (Loop Animasi)
+    let frame = 0; // Untuk animasi kedip/berdenyut
+
     function draw() {
-        // Bersihkan canvas dengan warna latar belakang hitam pekat
-        ctx.fillStyle = "#0a0a0a"; 
+        // Bersihkan canvas dengan efek trail yang halus (bukan clear penuh)
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; // Sedikit transparan untuk efek trail
         ctx.fillRect(0, 0, W, H);
 
         ctx.globalCompositeOperation = "lighter"; // Efek cahaya
 
-        for (let i = 0; i < max_stars; i++) {
+        for (let i = 0; i < num_stars; i++) {
             let s = stars[i];
 
-            // Update posisi
-            s.x += s.vx / 3000;
-            s.y += s.vy / 3000;
-            s.alpha += Math.sin(s.rotation / 500) * 0.005; // Efek kedip/berdenyut
-
-            // Batasi opacity
-            if (s.alpha > 1) s.alpha = 1;
-            if (s.alpha < 0) s.alpha = 0;
-
-            // Jika bintang keluar batas, pindahkan ke sisi lain (membuat loop tanpa batas)
-            if (s.x < 0 || s.x > W || s.y < 0 || s.y > H) {
-                stars[i] = new Star();
-                // Posisikan bintang baru di sisi yang berlawanan dari mana ia keluar
-                stars[i].x = s.x < 0 ? W : (s.x > W ? 0 : s.x);
-                stars[i].y = s.y < 0 ? H : (s.y > H ? 0 : s.y);
+            // Update posisi berdasarkan kecepatan Z (ilusi bergerak ke depan)
+            s.z -= 0.5; // Kecepatan pergerakan bintang (bisa diatur)
+            if (s.z <= 0) { // Jika bintang sudah lewat
+                stars[i] = new Star(); // Buat bintang baru
+                s = stars[i];
+                s.z = W; // Posisikan di kedalaman terjauh
             }
 
+            // Hitung posisi 2D dari posisi 3D (Z)
+            let sx = ((s.x - W / 2) * (W / s.z)) + W / 2;
+            let sy = ((s.y - H / 2) * (W / s.z)) + H / 2;
+            let s_radius = s.radius * (W / s.z); // Ukuran bintang juga berubah berdasarkan kedalaman
+
+            // Efek kedip/berdenyut
+            s.alpha += s.rotationSpeed;
+            if (s.alpha > 1 || s.alpha < 0.2) {
+                s.rotationSpeed *= -1; // Balik arah kedip
+            }
+            s.alpha = Math.max(0.2, Math.min(1, s.alpha)); // Batasi opacity
+
             // Gambar bintang
-            ctx.fillStyle = "rgba(255, 255, 255, " + s.alpha + ")";
+            ctx.fillStyle = s.color + s.alpha + ')'; // Gunakan warna dan alpha dinamis
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            ctx.arc(sx, sy, s_radius, 0, Math.PI * 2);
             ctx.fill();
+
+            // Efek glow (opsional, bisa berat)
+            ctx.shadowBlur = s_radius * 2;
+            ctx.shadowColor = s.color + '0.8)';
         }
-        
-        requestAnimationFrame(draw); // Panggil fungsi draw lagi (loop)
+        ctx.shadowBlur = 0; // Reset shadow untuk elemen lain
+
+        requestAnimationFrame(draw); // Loop animasi
     }
 
-    // 4. Handler Responsive (Menyesuaikan ukuran saat layar diubah)
+    // Handler responsive
     window.addEventListener('resize', () => {
         W = window.innerWidth;
         H = window.innerHeight;
         canvas.width = W;
         canvas.height = H;
-        // Bintang akan menyesuaikan ke ukuran baru
+        // Tidak perlu inisialisasi ulang bintang, mereka akan menyesuaikan
     });
 
-    // Mulai animasi
-    draw();
+    draw(); // Mulai animasi
 }
 
-// Ekspor fungsi agar bisa dipanggil dari HTML (misalnya: createStarfield('star-canvas');)
 window.createStarfield = createStarfield;
