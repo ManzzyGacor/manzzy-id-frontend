@@ -1,8 +1,7 @@
-// scripts/dashboard.js (Versi API - Backend MongoDB)
+// scripts/dashboard.js (VERSI TERBARU - Full API Integration)
 
-// GANTI DENGAN URL VERCEL API ANDA SETELAH DEPLOYMENT!
+// GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
-const API_AUTH_URL = 'https://manzzy-id-backend.vercel.app/api/auth'; 
 
 let userToken = localStorage.getItem('userToken'); 
 let userData = JSON.parse(localStorage.getItem('loggedInUser'));
@@ -20,15 +19,23 @@ const hamburgerMenu = document.getElementById('hamburger-menu');
 const navLinks = document.getElementById('nav-links');
 const adminLink = document.getElementById('admin-link');
 
-// --- Cek Status & Validasi ---
+// --- Helpers ---
+const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+
+const logoutUser = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'index.html';
+};
+
+// --- Cek Status & Validasi Awal ---
 if (!userData || !userToken) {
     alert('Anda harus login untuk mengakses Dashboard.');
-    window.location.href = 'index.html';
+    logoutUser();
 }
 
 welcomeUsernameElem.textContent = userData.username;
 welcomeMenuText.textContent = `Hai, ${userData.username}`;
-
 
 // --- LOGIKA HAMBURGER MENU ---
 hamburgerMenu.addEventListener('click', () => {
@@ -47,43 +54,183 @@ if (!userData.isAdmin) {
     adminLink.href = 'admin.html';
 }
 
+// --- CORE FUNCTIONS ---
 
-// --- FUNGSI UTAMA DASHBOARD (MEMANGGIL API) ---
-async function updateDashboard() {
+/**
+ * Mengambil dan merender semua data dashboard (Saldo, Transaksi, Produk, Info)
+ */
+async function fetchAndRenderDashboard() {
+    const userToken = localStorage.getItem('userToken');
     if (!userToken) return;
 
     try {
-        const response = await fetch(`${API_DATA_URL}/user-dashboard`, {
+        const response = await fetch(`${API_DATA_URL}/dashboard-data`, {
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
 
         if (response.ok) {
             const data = await response.json();
             
-            // Perbarui data lokal dengan data terbaru dari server
+            // 1. Update Saldo & Transaksi
+            userSaldoElem.textContent = formatRupiah(data.saldo);
+            userTransaksiElem.textContent = data.transaksi;
+
+            // Update local user data
             userData.saldo = data.saldo;
             userData.transaksi = data.transaksi;
-            localStorage.setItem('loggedInUser', JSON.stringify(userData)); 
-            
-            userSaldoElem.textContent = new Intl.NumberFormat('id-ID', {
-                style: 'currency', currency: 'IDR', minimumFractionDigits: 2,
-            }).format(data.saldo);
+            localStorage.setItem('loggedInUser', JSON.stringify(userData));
 
-            userTransaksiElem.textContent = data.transaksi;
+            // 2. Render Produk
+            renderProductList(data.products || []); 
+            
+            // 3. Render Informasi Admin
+            renderAdminInfo(data.information || []);
+            
         } else if (response.status === 401) {
-            alert('Sesi habis. Silakan login kembali.');
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('loggedInUser');
-            window.location.href = 'index.html';
+            alert('Sesi Anda berakhir, silakan login kembali.');
+            logoutUser();
+        } else {
+            console.error('Gagal mengambil data dashboard:', response.statusText);
         }
     } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Koneksi gagal saat mengambil data user:', error);
     }
 }
-updateDashboard();
+fetchAndRenderDashboard();
 
-// Fungsi Tampilkan/Sembunyikan Form Isi Saldo
+// --- RENDERING FUNCTIONS ---
+
+function renderProductList(products) {
+    const productListElement = document.getElementById('product-list');
+    productListElement.innerHTML = '';
+
+    if (products.length === 0) {
+        productListElement.innerHTML = `<p>Belum ada produk yang tersedia saat ini.</p>`;
+        return;
+    }
+
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'container-card product-card';
+        card.innerHTML = `
+            <img src="${product.imageURL}" alt="${product.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 15px;">
+            <h3 style="color: var(--color-accent);">${product.name}</h3>
+            <p style="font-size: 1.2em; font-weight: bold; margin: 5px 0;">${formatRupiah(product.price)}</p>
+            <p style="font-size: 0.9em; color: #aaa; flex-grow: 1;">Stok Hitungan: ${product.stock} item</p>
+            <button class="btn-primary" 
+                    onclick="openModal(
+                        '${product._id}', 
+                        '${product.name}', 
+                        ${product.price}, 
+                        '${product.description}', 
+                        '${product.imageURL}')"
+                    style="margin-top: 15px;"
+                    ${product.stock === 0 ? 'disabled style="background-color: #555;"' : ''}>
+                ${product.stock === 0 ? 'STOK HABIS' : 'BELI SEKARANG'}
+            </button>
+        `;
+        productListElement.appendChild(card);
+    });
+}
+
+function renderAdminInfo(infoList) {
+    const infoContainer = document.getElementById('admin-info-container');
+    infoContainer.innerHTML = '';
+
+    if (infoList.length === 0) {
+        infoContainer.innerHTML = `<p>Admin belum memposting informasi terbaru.</p>`;
+        return;
+    }
+
+    infoList.forEach(info => {
+        const date = new Date(info.createdAt);
+        const formattedDate = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        infoContainer.innerHTML += `
+            <div style="margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--color-accent); background-color: #1f1f1f; border-radius: 4px;">
+                <h4 style="color: var(--color-accent); margin-bottom: 5px;">${info.title}</h4>
+                <p style="font-size: 0.8em; color: #888; margin-bottom: 10px;">Diposting: ${formattedDate}</p>
+                <p>${info.content}</p>
+            </div>
+        `;
+    });
+}
+
+
+// --- MODAL LOGIC (Pembelian) ---
+
+const purchaseModal = document.getElementById('purchase-modal');
+const purchaseForm = document.getElementById('purchaseForm');
+
+window.openModal = function(id, name, price, desc, img) {
+    document.getElementById('modal-product-id').value = id;
+    document.getElementById('modal-product-name').textContent = name;
+    document.getElementById('modal-product-image').src = img;
+    document.getElementById('modal-product-desc').textContent = desc;
+    
+    document.getElementById('modal-product-price').textContent = formatRupiah(price);
+    document.getElementById('quantity').value = 1;
+
+    const quantityInput = document.getElementById('quantity');
+    quantityInput.oninput = function() {
+        const q = parseInt(quantityInput.value) || 0;
+        const total = price * q;
+        document.getElementById('total-cost').textContent = formatRupiah(total);
+    };
+    
+    quantityInput.oninput();
+    purchaseModal.style.display = 'block';
+    hamburgerMenu.classList.remove('active'); 
+    navLinks.classList.remove('active');
+};
+
+window.closeModal = function() {
+    purchaseModal.style.display = 'none';
+};
+
+
+// --- PEMBELIAN LOGIC (HANDLE SUBMIT) ---
+purchaseForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const productId = document.getElementById('modal-product-id').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+
+    if (quantity <= 0 || isNaN(quantity)) return alert('Jumlah pembelian tidak valid.');
+
+    try {
+        const response = await fetch(`${API_DATA_URL}/purchase`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ productId, quantity }),
+        });
+        
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(`Pembelian Berhasil! ${data.message}`);
+            closeModal();
+            fetchAndRenderDashboard(); 
+            // Arahkan ke halaman invoice
+            window.location.href = `invoice.html?id=${data.invoice.invoiceNumber}`;
+
+        } else {
+            alert(`Pembelian Gagal: ${data.message}`);
+        }
+
+    } catch (error) {
+        alert('Kesalahan koneksi saat memproses pembelian.');
+    }
+});
+
+
+// --- LAIN-LAIN ---
+
 window.showIsiSaldoForm = function() {
+    // ... (Logika showIsiSaldoForm tetap sama)
     const formCard = document.getElementById('card-isi-saldo');
     formCard.style.display = 'block';
     formCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -95,18 +242,18 @@ window.hideIsiSaldoForm = function() {
     document.getElementById('card-isi-saldo').style.display = 'none';
 }
 
-
-// --- LOGIKA PRODUK DAN INFORMASI (Simulasi Frontend) ---
-function getProducts() {
-    const productsData = localStorage.getItem('manzzy_products');
-    if (productsData) return JSON.parse(productsData);
+isiSaldoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const jumlah = parseInt(isiSaldoForm.jumlah.value);
     
-    return [
-        { id: 1, name: 'Premium ID Pass', price: 50000, desc: 'Akses ke semua fitur eksklusif, laporan bulanan, dan dukungan prioritas selama 1 bulan penuh.', imageURL: 'https://via.placeholder.com/150/00bcd4/000000?text=Premium' },
-        { id: 2, name: 'Diamond Bundle', price: 150000, desc: 'Paket produk terbaik (3 item) dengan diskon 10% dan bonus E-book pengembangan diri.', imageURL: 'https://via.placeholder.com/150/ffd700/000000?text=Diamond' }
-    ];
-}
+    alert(`Permintaan isi saldo sebesar ${formatRupiah(jumlah)} berhasil dicatat! Harap tunggu konfirmasi Admin.`);
+    isiSaldoForm.reset();
+    window.hideIsiSaldoForm();
+});
 
+logoutBtn.addEventListener('click', () => {
+    logoutUser();
+});
 function renderProducts() {
     const productsToRender = getProducts();
 
