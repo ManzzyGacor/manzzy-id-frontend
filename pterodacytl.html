@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manzzy ID Official - Panel Server</title>
+    <link rel="stylesheet" href="styles/main.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Khusus Halaman Panel Server */
+        .panel-container {
+            padding: 30px 50px; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .panel-container h1 {
+            color: var(--color-accent);
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .server-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 5px solid var(--color-accent); /* Default border */
+            transition: border-color 0.3s ease;
+        }
+        .server-card.status-active { border-left-color: #4CAF50; } /* Hijau untuk aktif */
+        .server-card.status-installing { border-left-color: #ff9800; } /* Oranye untuk installing */
+        .server-card.status-suspended { border-left-color: #f44336; } /* Merah untuk suspended */
+
+        .server-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--color-text-light);
+        }
+        .server-info p {
+            font-size: 0.9em;
+            color: #bbb;
+            margin: 0;
+        }
+        .server-controls button, .server-controls a {
+            padding: 8px 12px;
+            margin-left: 8px;
+            font-size: 0.9em; /* Kecilkan tombol kontrol */
+        }
+        
+        /* Responsif */
+        @media (max-width: 768px) {
+            .panel-container { padding: 20px; }
+            .server-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .server-controls { margin-top: 10px; width: 100%; text-align: right; }
+             .server-controls button, .server-controls a { margin-left: 5px; padding: 6px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
+        <div class="hamburger-menu" id="hamburger-menu">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </div>
+        <ul class="nav-links" id="nav-links">
+             <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Panel Server</li>
+            <li><a href="dashboard.html">Dashboard Utama</a></li>
+            <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
+            <li><a href="admin.html" id="admin-link">Login Admin</a></li>
+            <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="panel-container">
+        <h1><i class="fas fa-server"></i> Panel Server Anda</h1>
+        
+        <div class="container-card" style="margin-bottom: 40px;">
+            <h3>Pesan Server Baru</h3>
+            <form id="orderServerForm">
+                <label for="server-name">Nama Server:</label>
+                <input type="text" id="server-name" required placeholder="Contoh: Server Minecraft Keren">
+                
+                <label for="package-id">Pilih Paket Server:</label>
+                <select id="package-id" required style="margin-bottom: 20px;">
+                    <option value="" disabled selected>-- Pilih Spesifikasi RAM --</option>
+                    <option value="ram_1gb">1 GB RAM (Rp 1.000 / bln)</option>
+                    <option value="ram_2gb">2 GB RAM (Rp 2.000 / bln)</option>
+                    <option value="ram_3gb">3 GB RAM (Rp 3.000 / bln)</option>
+                    <option value="ram_4gb">4 GB RAM (Rp 4.000 / bln)</option>
+                    <option value="ram_5gb">5 GB RAM (Rp 5.000 / bln)</option>
+                    <option value="ram_6gb">6 GB RAM (Rp 6.000 / bln)</option>
+                    <option value="ram_7gb">7 GB RAM (Rp 7.000 / bln)</option>
+                    <option value="ram_8gb">8 GB RAM (Rp 8.000 / bln)</option>
+                    <option value="ram_9gb">9 GB RAM (Rp 9.000 / bln)</option>
+                    <option value="ram_10gb">10 GB RAM (Rp 9.500 / bln)</option>
+                    <option value="ram_unlimited">Unlimited RAM (Rp 10.000 / bln)</option>
+                    </select>
+
+                <button type="submit" class="btn-primary" style="background-color: #4CAF50; width: 100%;">BELI & DEPLOY SEKARANG</button>
+            </form>
+        </div>
+
+        <h2 style="border-bottom: 2px solid var(--color-accent); padding-bottom: 10px; margin-bottom: 20px;">Server Aktif Anda</h2>
+        <div id="server-list">
+            <p>Memuat daftar server...</p>
+            </div>
+    </div>
+    
+    <div class="container-card modal" id="card-isi-saldo" style="display: none; transition: opacity 0.3s; max-width: 500px; margin: 30px auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1002;"> 
+        <h2>Konfirmasi Isi Saldo</h2>
+        <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
+        <form id="isiSaldoForm">
+            <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
+            <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
+            <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
+        </form>
+        <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
+    </div>
+
+     <div class="footer">
+        &copy; 2025 Manzzy ID Official. All rights reserved.
+    </div>
+
+    <script>
+        // Fungsi basic untuk modal saldo
+        function showIsiSaldoForm() { const formCard = document.getElementById('card-isi-saldo'); if(formCard) formCard.style.display = 'block'; }
+        function hideIsiSaldoForm() { const formCard = document.getElementById('card-isi-saldo'); if(formCard) formCard.style.display = 'none'; }
+        const isiSaldoForm = document.getElementById('isiSaldoForm');
+        if (isiSaldoForm) {
+            isiSaldoForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const jumlah = parseInt(isiSaldoForm.jumlah.value);
+                alert(`Permintaan isi saldo sebesar ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(jumlah)} berhasil dicatat! Harap tunggu konfirmasi Admin.`);
+                isiSaldoForm.reset(); hideIsiSaldoForm();
+            });
+        }
+        
+         // Logika Hamburger Menu & Logout
+        const hamburgerMenu = document.getElementById('hamburger-menu'); const navLinks = document.getElementById('nav-links'); const adminLink = document.getElementById('admin-link'); const logoutBtn = document.getElementById('logout-btn'); const welcomeMenuText = document.getElementById('welcome-menu-item');
+        if(hamburgerMenu && navLinks){ hamburgerMenu.addEventListener('click', () => { hamburgerMenu.classList.toggle('active'); navLinks.classList.toggle('active'); }); }
+        const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (welcomeMenuText && userData) welcomeMenuText.textContent = `Panel Server`;
+        if(adminLink && userData){ if (!userData.isAdmin) { adminLink.style.display = 'none'; } else { adminLink.textContent = 'Admin Panel'; adminLink.href = 'admin.html'; } }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('userToken'); localStorage.removeItem('loggedInUser'); alert('Anda berhasil logout.'); window.location.href = 'index.html'; }); }
+    </script>
+    <script src="scripts/pterodactyl.js"></script> </body>
+</html>
