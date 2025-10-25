@@ -5,56 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manzzy ID Official - Login</title>
     <link rel="stylesheet" href="styles/main.css">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-    </style>
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> </head>
 <body>
-
-
-    <div class="container-card" id="login-form-card" style="transition: opacity 0.3s;">
-        <h1 style="color: var(--color-text-light);">Manzzy ID Official</h1>
-        <p style="color: var(--color-accent); margin-bottom: 30px;">Login ke Akun Anda</p>
-        
+    <div class="auth-container" id="login-form-container">
+        <h2 style="color: var(--color-text-light); margin-bottom: 25px;">Login Manzzy ID</h2>
         <form id="loginForm">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit" class="btn-primary">LOGIN</button>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-primary">Login</button>
         </form>
-        
-        <p style="text-align: center; margin-top: 20px;">
-            Belum punya akun? <a href="#" id="showRegister" style="color: var(--color-accent); text-decoration: none;">Daftar di sini</a>
-        </p>
+        <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
     </div>
 
-    <div class="container-card" id="register-form-card" style="display: none; opacity: 0; transition: opacity 0.3s;">
-        <h1 style="color: var(--color-text-light);">Daftar Akun Baru</h1>
-        <p style="color: var(--color-accent); margin-bottom: 30px;">Manzzy ID Official</p>
-        
+    <div class="auth-container" id="register-form-container" style="display: none;">
+        <h2 style="text-align: center; margin-bottom: 30px;">
+            <span class="register-title-rgb">Register Akun Baru</span> </h2>
         <form id="registerForm">
-            <label for="reg-username">Username:</label>
-            <input type="text" id="reg-username" name="username" required>
-            
-            <label for="reg-password">Password:</label>
-            <input type="password" id="reg-password" name="password" required>
-            
-            <button type="submit" class="btn-primary">DAFTAR</button>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="reg-username" name="username" placeholder="Buat Username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="reg-password" name="password" placeholder="Buat Password (min. 6 karakter)" required>
+            </div>
+             <button type="submit" class="btn-primary">Daftar Sekarang</button>
         </form>
-        
-        <p style="text-align: center; margin-top: 20px;">
-            Sudah punya akun? <a href="#" id="showLogin" style="color: var(--color-accent); text-decoration: none;">Login</a>
-        </p>
+        <p>Sudah punya akun? <a href="#" id="showLogin">Login</a></p>
     </div>
 
     <script src="scripts/main.js"></script>
+    <script>
+        // Logika sederhana untuk beralih form (bisa dipindah ke main.js)
+        const loginContainer = document.getElementById('login-form-container');
+        const registerContainer = document.getElementById('register-form-container');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+
+        if (showRegisterLink && showLoginLink && loginContainer && registerContainer) {
+            showRegisterLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginContainer.style.display = 'none';
+                registerContainer.style.display = 'block';
+            });
+
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+            });
+        }
+    </script>
 </body>
 </html>
