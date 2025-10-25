@@ -1,22 +1,22 @@
-// scripts/pterodactyl.js (Implementasi API Asli & Kontrol - Final Check)
+// scripts/pterodactyl.js (Implementasi API Asli & Kontrol & Tampilkan Kredensial)
 
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 // GANTI DENGAN URL PANEL PTERODACTYL ANDA (tanpa /api/application)
 const PTERO_PANEL_URL = 'https://nodepublikzeingacor.panel-freefire.biz.id';
 
-const userToken = localStorage.getItem('userToken'); // Ambil token dari localStorage
+const userToken = localStorage.getItem('userToken');
 const serverListContainer = document.getElementById('server-list');
 const orderServerForm = document.getElementById('orderServerForm');
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
 
 // --- Cek Login ---
-if (!userToken) { // Periksa apakah token ADA
-    console.error("Token login tidak ditemukan di localStorage!"); // Pesan debug
+if (!userToken) {
+    console.error("Token login tidak ditemukan di localStorage!");
     alert('Anda harus login untuk mengakses panel ini. Token tidak ditemukan.');
     window.location.href = 'index.html';
 } else {
-    console.log("Token ditemukan:", userToken.substring(0, 10) + "..."); // Tampilkan sebagian token untuk debug
+    console.log("Token ditemukan:", userToken.substring(0, 10) + "...");
 }
 
 // --- 1. MEMUAT DAFTAR SERVER PENGGUNA ---
@@ -24,15 +24,13 @@ async function fetchUserServers() {
     serverListContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Memuat daftar server...</p>';
     try {
         const response = await fetch(`${API_DATA_URL}/user-servers`, {
-            headers: {
-                'Authorization': `Bearer ${userToken}` // Kirim token di header
-            }
+            headers: { 'Authorization': `Bearer ${userToken}` }
         });
 
-        if (response.status === 401) { // Error jika token tidak valid/kadaluarsa
+        if (response.status === 401) {
              console.error("Fetch User Servers Gagal: 401 Unauthorized (Token salah/kadaluarsa?)");
              alert('Sesi habis atau token tidak valid. Silakan login kembali.');
-             localStorage.removeItem('userToken'); // Hapus token lama
+             localStorage.removeItem('userToken');
              localStorage.removeItem('loggedInUser');
              window.location.href = 'index.html';
              return;
@@ -75,7 +73,6 @@ async function fetchUserServers() {
         console.error('Error fetching servers:', error);
     }
 }
-// Panggil saat halaman dimuat
 fetchUserServers();
 
 // --- 2. LOGIKA PEMBELIAN SERVER BARU ---
@@ -100,26 +97,31 @@ if (orderServerForm) {
         try {
             const response = await fetch(`${API_DATA_URL}/purchase/pterodactyl`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userToken}` // Kirim token saat membeli
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
                 body: JSON.stringify({ packageId: packageId, serverName: serverName }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                alert(`Sukses! ${data.message}`);
+                // --- MENAMPILKAN KREDENSIAL DI ALERT ---
+                let successMessage = `Sukses! ${data.message}`;
+                if (data.pterodactylCredentials && data.pterodactylCredentials.password) {
+                    successMessage += `\n\nLogin Pterodactyl Panel:\nUsername: ${data.pterodactylCredentials.username}\nPassword: ${data.pterodactylCredentials.password}\n\nHarap simpan password ini!`;
+                } else if (data.pterodactylCredentials) {
+                     successMessage += `\n\nLogin Pterodactyl Panel dengan akun:\nUsername: ${data.pterodactylCredentials.username}\n(Gunakan password Pterodactyl Anda yang sudah ada)`;
+                }
+                alert(successMessage);
+                // ----------------------------------------
+
                 orderServerForm.reset();
                 fetchUserServers(); // Muat ulang daftar server
                 localStorage.removeItem('loggedInUser'); // Hapus cache data user agar saldo terupdate di dashboard
-            } else if (response.status === 401) { // Handle token error saat pembelian
-                 console.error("Purchase Failed: 401 Unauthorized (Token salah/kadaluarsa?)");
+            } else if (response.status === 401) {
+                 console.error("Purchase Failed: 401 Unauthorized");
                  alert('Sesi habis atau token tidak valid. Silakan login kembali.');
-                 logoutUser(); // Panggil fungsi logout
-            }
-             else {
+                 logoutUser();
+            } else {
                 console.error("Purchase Failed:", response.status, data.message);
                 alert(`Gagal membuat server: ${data.message}`);
             }
@@ -142,15 +144,12 @@ window.controlServer = async (serverId, command) => {
     alert(`[INFO] Mengirim sinyal ${command.toUpperCase()} ke Server ID ${serverId}. Mohon tunggu...`);
 
     const buttons = document.querySelectorAll(`.server-card button[onclick*="'${serverId}'"]`);
-    buttons.forEach(btn => btn.disabled = true); // Nonaktifkan tombol sementara
+    buttons.forEach(btn => btn.disabled = true);
 
     try {
         const response = await fetch(`${API_DATA_URL}/server-control`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}` // Kirim token untuk kontrol
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
             body: JSON.stringify({ serverId, command }),
         });
         const data = await response.json();
@@ -162,20 +161,19 @@ window.controlServer = async (serverId, command) => {
             console.error("Server Control Failed: 401 Unauthorized");
             alert('Sesi habis atau token tidak valid. Silakan login kembali.');
             logoutUser();
-        }
-        else {
+        } else {
             console.error("Server Control Failed:", response.status, data.message);
             alert(`Gagal mengirim sinyal: ${data.message}`);
-            buttons.forEach(btn => btn.disabled = false); // Aktifkan lagi jika gagal
+            buttons.forEach(btn => btn.disabled = false);
         }
     } catch (error) {
         alert('Gagal koneksi ke API kontrol server.');
         console.error('Error controlling server:', error);
-        buttons.forEach(btn => btn.disabled = false); // Aktifkan lagi jika gagal
+        buttons.forEach(btn => btn.disabled = false);
     }
 };
 
-// Pastikan ada fungsi logoutUser jika dipanggil di atas
+// Fungsi logout helper
 function logoutUser() {
     localStorage.removeItem('userToken');
     localStorage.removeItem('loggedInUser');
