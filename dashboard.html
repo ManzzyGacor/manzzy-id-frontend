@@ -5,238 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manzzy ID Official - Dashboard</title>
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/pterodactyl-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* CSS Tambahan untuk layout baru */
-        .profile-section {
-            display: flex;
-            align-items: center;
-            background-color: rgba(30, 30, 50, 0.8); /* Warna lebih gelap untuk profile */
-            padding: 25px;
-            border-radius: 12px;
-            margin: 30px 50px; /* Jarak dari atas dan samping */
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
-        }
-        .profile-pic {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: #444; /* Warna background default pic */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 20px;
-            overflow: hidden; /* Jaga ikon tetap di dalam lingkaran */
-            flex-shrink: 0; /* Mencegah gambar mengecil */
-        }
-        .profile-pic i {
-            font-size: 3em;
-            color: #ccc;
-        }
-        .profile-info h3 {
-            margin: 0;
-            font-size: 1.4em;
-            color: var(--color-text-light);
-            word-break: break-all; /* Mencegah username panjang merusak layout */
-        }
-        .profile-info p {
-            margin: 5px 0 0 0;
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #4CAF50; /* Warna hijau untuk saldo */
-        }
-
-        .navigation-section {
-            display: flex; /* Menyusun kotak secara horizontal */
-            justify-content: space-around; /* Memberi jarak antar kotak */
-            gap: 20px; /* Jarak antar kotak */
-            padding: 0 50px;
-            max-width: 1200px;
-            margin: 40px auto;
-        }
-        .nav-box {
-            background-color: var(--color-dark-gray);
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            flex: 1; /* Agar semua kotak lebarnya sama */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--color-text-light);
-            border: 1px solid transparent;
-        }
-        .nav-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 188, 212, 0.3);
-            border-color: var(--color-accent);
-        }
-        .nav-box i {
-            font-size: 2.5em;
+        .notification {
+            background-color: rgba(42, 42, 42, 0.9);
+            backdrop-filter: blur(3px);
             color: var(--color-accent);
-            margin-bottom: 10px;
-        }
-        .nav-box h4 {
-            margin: 0;
-            font-size: 1.1em;
-        }
-
-        .footer {
+            padding: 8px 50px;
             text-align: center;
-            padding: 20px;
-            font-size: 0.8em;
-            color: #555;
-            margin-top: 50px;
-            border-top: 1px solid #1f1f1f;
+            border-bottom: 1px solid rgba(0, 188, 212, 0.5);
+            font-weight: 600;
+            position: sticky;
+            top: 60px; /* Di bawah navbar fixed */
+            z-index: 90;
         }
-        /* Responsif untuk Navigasi dan Profil */
+        .profile-section { margin-top: 80px; /* Jarak dari atas */ }
         @media (max-width: 768px) {
-            .navigation-section {
-                flex-direction: column; /* Tumpuk vertikal di layar kecil */
-            }
-            .profile-section {
-                flex-direction: column;
-                align-items: flex-start; /* Ratakan kiri di layar kecil */
-                margin: 20px;
-            }
-             .profile-pic {
-                margin-bottom: 15px; /* Beri jarak antara foto dan info */
-             }
+            .notification { top: 50px; }
+            .profile-section { margin-top: 70px; }
         }
-        /* Style untuk Modal Tetap Sama */
-        .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);
-        }
-        .modal-content {
-             margin: 10% auto; padding: 30px; width: 80%; max-width: 500px; position: relative;
-        }
-        .success-modal-content {
-             margin: 15% auto; padding: 30px; width: 80%; max-width: 450px; text-align: center; position: relative;
-        }
-        .close-btn {
-            position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; cursor: pointer; color: #ff0000;
-        }
-         .success-modal-content .close-btn { color: #aaa; }
     </style>
 </head>
 <body>
-    
-
     <nav class="navbar">
         <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
-        <div class="hamburger-menu" id="hamburger-menu">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-        </div>
+        <div class="hamburger-menu" id="hamburger-menu"> <span class="bar"></span><span class="bar"></span><span class="bar"></span> </div>
         <ul class="nav-links" id="nav-links">
-            <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
-            <li><a href="#" onclick="showIsiSaldoForm()">Isi Saldo</a></li>
-            <li><a href="admin.html" id="admin-link">Login Admin</a></li>
-            <li><a href="pterodactyl.html">Panel Server</a></li> <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
-            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
+             <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Selamat datang!</li>
+             <li><a href="pterodactyl.html">Panel Server</a></li>
+             <li><a href="admin.html" id="admin-link">Login Admin</a></li>
+             <li><a href="https://wa.me/628956053911" target="_blank">Kontak Admin</a></li>
+             <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
         </ul>
     </nav>
 
+    <div class="notification" id="login-notification">
+        Anda login sebagai <span id="welcome-username">[Username]</span>
+    </div>
+
     <div class="profile-section">
-        <div class="profile-pic">
-            <i class="fas fa-user"></i> </div>
+        <div class="profile-pic"> <i class="fas fa-user"></i> </div>
         <div class="profile-info">
             <h3 id="profile-username">[Nama User]</h3>
             <p id="profile-saldo">Rp 0</p>
-            <button onclick="showIsiSaldoForm()" class="btn-primary btn-topup-profile" style="margin-top: 15px;">
-                <i class="fas fa-plus-circle"></i> Top Up Saldo
-            </button>
-            </div>
-    </div>
+            <button onclick="showIsiSaldoForm()" class="btn-primary btn-topup-profile"> <i class="fas fa-plus-circle"></i> Top Up Saldo </button>
         </div>
     </div>
 
-<div class="navigation-section">
-        <a href="pterodactyl.html" class="nav-box"> 
-            <i class="fas fa-server"></i>
-            <h4>Panel Server</h4>
-        </a>
-        <a href="jadibot.html" target="_blank" class="nav-box"> 
-            <i class="fab fa-whatsapp"></i>
-            <h4>Jadi Bot WA</h4>
-        </a>
-        <a href="https://chat.whatsapp.com/G3eLNFmrWQEBzQfI4RsrLJ?mode=ems_copy_t" target="_blank" class="nav-box"> <i class="fas fa-users"></i> <h4>WhatsApp Group</h4>
-        </a>
-</div>
-
-    <div class="container-card" id="card-isi-saldo" style="display: none; transition: opacity 0.3s; max-width: 500px; margin: 30px auto;">
-        <h2>Konfirmasi Isi Saldo</h2>
-        <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
-        <form id="isiSaldoForm">
-            <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
-            <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
-            <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
-        </form>
-        <button onclick="hideIsiSaldoForm()" style="margin-top: 10px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
+    <div class="navigation-section">
+        <a href="pterodactyl.html" class="nav-box"> <i class="fas fa-server"></i><h4>Panel Server</h4></a>
+        <a href="https://wa.me/628956053911?text=Halo%20Admin%2C%20saya%20tertarik%20dengan%20layanan%20Bot%20WA." target="_blank" class="nav-box"> <i class="fab fa-whatsapp"></i><h4>Jadi Bot WA</h4></a>
+        <a href="https://discord.gg/yourinvite" target="_blank" class="nav-box"> <i class="fab fa-discord"></i><h4>Komunitas Discord</h4></a>
+        <a href="https://chat.whatsapp.com/G3eLNFmrWQEBzQfI4RsrLJ?mode=ems_copy_t" target="_blank" class="nav-box"> <i class="fas fa-users"></i><h4>WhatsApp Group</h4></a>
     </div>
 
-    <div style="padding: 0 50px; max-width: 1200px; margin: 40px auto 0;"> <h2 style="border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
-        <div class="product-grid" id="product-list">
-            </div>
-
+    <div style="padding: 0 50px; max-width: 1200px; margin: 40px auto 0;">
+        <h2 style="border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">PRODUK EKSKLUSIF</h2>
+        <div class="product-grid" id="product-list"> <p>Memuat produk...</p> </div>
         <h2 style="margin-top: 60px; border-bottom: 2px solid var(--color-accent); padding-bottom: 10px;">INFORMASI TERBARU</h2>
         <div class="container-card" style="margin-bottom: 50px;">
-            <div id="admin-info-container">
-                </div>
+            <div id="admin-info-container"> <p>Memuat informasi...</p> </div>
         </div>
     </div>
 
-    <div id="purchase-modal" class="modal">
-        <div class="container-card modal-content">
-             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modal-product-name" style="color: var(--color-accent); margin-bottom: 10px;">[Nama Produk]</h2>
-            <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
-            <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
-            <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
-            <form id="purchaseForm">
-                <input type="hidden" id="modal-product-id">
-                <label for="quantity">Jumlah Pembelian:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
-                <label style="display: block;">Total Biaya:</label>
-                <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
-                <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
-            </form>
-        </div>
-    </div>
+    <div id="modal-placeholder"></div>
 
-    <div id="success-modal" class="modal">
-        <div class="container-card success-modal-content">
-             <span class="close-btn" onclick="closeSuccessModal()">&times;</span>
-            <i class="fas fa-check-circle" style="font-size: 4em; color: #4CAF50; margin-bottom: 20px;"></i>
-            <h2 style="color: #4CAF50; margin-bottom: 15px;">Pembelian Berhasil!</h2>
-            <p id="success-message" style="margin-bottom: 25px;">Stok telah dikurangi. Silakan konfirmasi pesanan Anda kepada Admin.</p>
-            <a id="whatsapp-confirm-button" href="#" target="_blank" class="btn-primary" style="background-color: #25D366; color: white; display: block; width: 100%; text-decoration: none;">
-                <i class="fab fa-whatsapp"></i> Konfirmasi via WhatsApp
-            </a>
-            <button onclick="closeSuccessModal()" style="margin-top: 15px; background: none; color: var(--color-text-light); border: none; cursor: pointer;">Tutup</button>
-        </div>
-    </div>
+    <div class="footer"> &copy; 2025 Manzzy ID Official. All rights reserved. </div>
 
-    <div class="footer">
-        &copy; 2025 Manzzy ID Official. All rights reserved.
-    </div>
-<div id="pterodactylSuccessModal" class="custom-modal">
-    <div class="custom-modal-content">
-        <h3 id="modalTitle">Sukses! Server berhasil dipesan!</h3>
-        <p id="modalMessage">Akun Pterodactyl baru telah dibuat.</p>
-        <div class="credentials-box">
-            <p><strong>Username:</strong> <span id="modalPteroUsername"></span></p>
-            <p><strong>Password:</strong> <span id="modalPteroPassword"></span></p>
-        </div>
-        <p class="warning-text">Harap simpan kredensial ini!</p>
-        <button id="modalCloseBtn" class="modal-button">Oke</button>
-    </div>
-</div>
-<script src="scripts/dashboard.js"></script>
-<script src="scripts/pterodactyl.js"></script>
-
+    <script src="scripts/dashboard.js"></script>
 </body>
 </html>
