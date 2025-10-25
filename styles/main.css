@@ -1,4 +1,4 @@
-/* styles/main.css (VERSI LENGKAP - Login Baru & Layout Dashboard Baru) */
+/* styles/main.css (VERSI BERSIH - Untuk Dashboard, Admin, dll.) */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
@@ -23,32 +23,11 @@ body {
     font-family: 'Poppins', sans-serif;
     color: var(--color-text-light);
     line-height: 1.6;
-    /* GANTI URL BACKGROUND IMAGE DI SINI! */
-    background-image: url('https://raw.githubusercontent.com/Bell575/dat1/main/uploads/b00f52-1761372585658.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* Membuat background tidak ikut scroll */
+    /* BACKGROUND GRADASI STATIS UNTUK HALAMAN SELAIN LOGIN */
+    background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 50%, var(--color-gradient-end) 100%);
     min-height: 100vh;
-    /* Hapus display flex dari body utama agar berlaku normal di halaman lain */
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
     padding-top: 60px; /* Jarak untuk navbar fixed */
-    position: relative; /* Untuk overlay */
-}
-
-/* Overlay Gelap di atas Background Image */
-body::before {
-    content: '';
-    position: fixed; /* Ubah ke fixed agar menutupi seluruh viewport */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Overlay gelap 60% */
-    backdrop-filter: blur(3px); /* Sedikit blur pada background */
-    z-index: -1; /* Pastikan di bawah konten */
+    position: relative; 
 }
 
 /* --- Gaya Card Umum (Glassmorphism) --- */
@@ -63,79 +42,14 @@ body::before {
 }
 .container-card:hover { transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0, 188, 212, 0.3); }
 
-/* --- Gaya Khusus untuk Form Login/Register agar terpusat --- */
-/* Bungkus form di index.html dengan div ini jika ingin terpusat */
-.auth-page-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 60px); /* Tinggi viewport dikurangi tinggi navbar */
-    padding: 20px;
-}
-
-/* Gaya untuk Container Auth (Form Login/Register) - Glassmorphism */
-.auth-container {
-    width: 100%;
-    max-width: 450px;
-    padding: 40px;
-    background-color: rgba(20, 20, 30, 0.75);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-/* Input Fields dalam Auth Container */
-.auth-container input[type="text"],
-.auth-container input[type="email"],
-.auth-container input[type="password"] {
-    background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--color-text-light);
-    padding-left: 50px;
-    width: 100%;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-    font-family: inherit;
-    transition: all 0.3s ease;
-}
-.auth-container input::placeholder { color: rgba(255, 255, 255, 0.6); }
-.auth-container input:focus { border-color: var(--color-accent); box-shadow: 0 0 10px rgba(0, 188, 212, 0.7); background-color: rgba(255, 255, 255, 0.1); }
-.input-group { position: relative; margin-bottom: 20px; }
-.input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.7); font-size: 1.1em; }
-
-/* Tombol Sign Up/Login (Gradasi RGB Bergerak) */
-.auth-container .btn-primary {
-    background: linear-gradient(90deg, #ff007f, #00ffff, #ff007f);
-    background-size: 200% 100%;
-    animation: gradientShift 2s linear infinite;
-    color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.1em; font-weight: bold; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); width: 100%; cursor: pointer; transition: all 0.3s ease;
-}
-.auth-container .btn-primary:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6); background-position: 100% 0; }
-@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-/* Teks Link Daftar/Login */
-.auth-container p { margin-top: 25px; font-size: 0.95em; color: rgba(255, 255, 255, 0.8); }
-.auth-container p a { color: var(--color-accent); text-decoration: none; font-weight: 600; transition: color 0.3s; }
-.auth-container p a:hover { color: #00eff; text-decoration: underline; }
-
-/* Efek RGB Bergerak untuk Judul Register */
-.register-title-rgb {
-    font-size: 2em; font-weight: 700; text-transform: uppercase; background: linear-gradient(90deg, #ff007f, #00ffff, #fffc00, #ff007f); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 4s linear infinite, textShadowPulse 2s ease-in-out infinite alternate; display: inline-block; padding-bottom: 5px;
-}
-@keyframes textShadowPulse { 0% { text-shadow: 0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(255, 0, 127, 0.5); } 50% { text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(255, 0, 127, 0.8); } 100% { text-shadow: 0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(255, 0, 127, 0.5); } }
-
 /* --- Input Umum (di luar .auth-container) --- */
-input[type="text"], input[type="password"], input[type="number"], textarea, select {
+input[type="text"], input[type="password"], input[type="number"], input[type="email"], textarea, select {
     width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #333; border-radius: 6px; background-color: #2c2c2c; color: var(--color-text-light); transition: border-color 0.3s; resize: vertical; font-family: inherit;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--color-accent); outline: none; box-shadow: 0 0 8px rgba(0, 188, 212, 0.5); }
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2300bcd4' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+
+/* --- Tombol Primer (Berlaku global) --- */
 .btn-primary { background-color: var(--color-accent); color: var(--color-black-diamond); padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background-color 0.3s, transform 0.2s; text-transform: uppercase; }
 .btn-primary:hover { background-color: #00eff; transform: scale(1.05); }
 
@@ -162,7 +76,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
     background-color: rgba(30, 30, 50, 0.8);
     padding: 25px;
     border-radius: 12px;
-    margin: 30px 50px 40px 50px; /* Margin atas kembali */
+    margin: 30px 50px 40px 50px; /* Margin atas kembali ditambah sedikit setelah hapus padding body */
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -218,21 +132,14 @@ th { background-color: var(--color-dark-gray); color: var(--color-accent); }
     .navigation-section { padding: 0 20px; margin: 30px auto; }
     .admin-container { padding: 20px; }
     .form-add-saldo { flex-direction: column; align-items: stretch; }
-    .container-card { padding: 25px 20px; } /* Padding disesuaikan */
+    .container-card { padding: 25px 20px; }
     .modal-content, .success-modal-content { width: 90%; margin: 15% auto; }
-    .auth-container { padding: 30px; margin: 10px; }
-    .register-title-rgb { font-size: 1.8em; }
 }
 @media (max-width: 480px) {
     .profile-info { /* Profil di mobile */
-        /* justify-content: flex-start; */
+         /* justify-content: flex-start; */
     }
     .profile-info .btn-topup-profile {
          margin-top: 10px; width: 100%; justify-content: center; padding: 10px 15px; font-size: 0.9em;
     }
-    .auth-container { padding: 25px 20px; }
-    .register-title-rgb { font-size: 1.5em; }
-    .auth-container input[type="text"], .auth-container input[type="email"], .auth-container input[type="password"] { padding-left: 40px; font-size: 0.95em;}
-    .input-group i { left: 12px; font-size: 1em; }
-    .auth-container .btn-primary { padding: 12px 20px; font-size: 1em; }
     }
