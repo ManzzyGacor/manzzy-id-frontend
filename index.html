@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manzzy ID Official - Login</title>
     <link rel="stylesheet" href="styles/login-styles.css"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+</head>
 <body>
     <div class="auth-page-wrapper">
 
@@ -25,9 +26,10 @@
             <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
         </div>
 
-        <div class="container-card auth-container" id="register-form-container" style="display: none;">
+        <div class="container-card auth-container" id="register-form-container" style="display: none;"> 
             <h2 style="text-align: center; margin-bottom: 30px;">
-                <span class="register-title-rgb">Register Akun Baru</span> </h2>
+                <span class="register-title-rgb">Register Akun Baru</span> 
+            </h2>
             <form id="registerForm">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -42,10 +44,9 @@
             <p>Sudah punya akun? <a href="#" id="showLogin">Login</a></p>
         </div>
 
-<script src="scripts/main.js"></script> 
+    </div> <script src="scripts/main.js"></script> 
     
     <script>
-        // Tunggu sampai seluruh HTML selesai dimuat baru jalankan kode ini
         document.addEventListener('DOMContentLoaded', function() {
             
             const loginContainer = document.getElementById('login-form-container');
@@ -57,27 +58,22 @@
             if (loginContainer && registerContainer && showRegisterLink && showLoginLink) {
                 
                 showRegisterLink.addEventListener('click', function(event) {
-                    event.preventDefault(); // Stop link default
-                    console.log("Klik 'Daftar di sini' terdeteksi!"); // Debugging
-                    loginContainer.style.display = 'none';    // Sembunyikan login
-                    registerContainer.style.display = 'block'; // Tampilkan register
-                    // Pastikan opacity juga 1 jika pakai transisi
-                    // registerContainer.style.opacity = '1'; 
+                    event.preventDefault(); 
+                    console.log("Klik 'Daftar di sini' terdeteksi!"); 
+                    loginContainer.style.display = 'none';    
+                    registerContainer.style.display = 'block'; 
                 });
     
                 showLoginLink.addEventListener('click', function(event) {
-                    event.preventDefault(); // Stop link default
-                    console.log("Klik 'Login' (dari register) terdeteksi!"); // Debugging
-                    registerContainer.style.display = 'none'; // Sembunyikan register
-                    loginContainer.style.display = 'block';   // Tampilkan login
-                     // Pastikan opacity juga 1 jika pakai transisi
-                    // loginContainer.style.opacity = '1';
+                    event.preventDefault(); 
+                    console.log("Klik 'Login' (dari register) terdeteksi!"); 
+                    registerContainer.style.display = 'none'; 
+                    loginContainer.style.display = 'block';   
                 });
     
-                console.log("Event listeners untuk switch form berhasil ditambahkan."); // Pesan sukses
+                console.log("Event listeners untuk switch form berhasil ditambahkan."); 
 
             } else {
-                 // Jika error ini muncul di console, berarti ID elemennya salah
                 console.error("Error Penting: Elemen form login/register atau link switch tidak ditemukan! Periksa ID di HTML.");
             }
 
@@ -85,7 +81,3 @@
     </script>
 </body>
 </html>
-</body>
-</html>
- 
-//apdet
