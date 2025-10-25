@@ -43,7 +43,7 @@ body::before {
     z-index: 0; 
 }
 
-/* Gaya untuk Container Auth (Form Login/Register) - Glassmorphism */
+/* Gaya untuk Container Auhth (Form Login/Register) - Glassmorphism */
 .auth-container {
     width: 100%;
     max-width: 450px; 
