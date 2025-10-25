@@ -85,22 +85,26 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .profile-pic i { font-size: 3em; color: #ccc; }
 
 /* BLOK CSS BARU UNTUK PROFIL INFO */
-.profile-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    gap: 15px;
-}
-.profile-info h3 { /* Username */
-    margin: 0; font-size: 1.4em; color: var(--color-text-light); word-break: break-all; flex-basis: 100%;
-}
-.profile-info p { /* Saldo */
-    margin: 0; font-size: 1.6em; font-weight: bold; color: #4CAF50; flex-grow: 1;
-}
-.profile-info .btn-topup-profile { /* Tombol Top Up */
-    padding: 8px 15px; font-size: 0.8em; display: inline-flex; align-items: center; width: auto; margin: 0; flex-shrink: 0;
+@media (max-width: 600px) { /* Tingkatkan breakpoint ke 600px */
+    .profile-info {
+        flex-direction: column; /* Tumpuk item secara vertikal */
+        align-items: flex-start; /* Ratakan kiri semua item */
+    }
+    .profile-info h3 { /* Username */
+        flex-basis: auto; /* Hapus flex-basis 100% agar tidak aneh */
+        margin-bottom: 5px; /* Beri sedikit jarak bawah */
+    }
+     .profile-info p { /* Saldo */
+        margin-bottom: 15px; /* Beri jarak lebih besar di bawah saldo */
+        flex-grow: 0; /* Hapus flex-grow agar tidak mendorong tombol */
+     }
+    .profile-info .btn-topup-profile {
+         margin-top: 0; /* Hapus margin atas karena sudah ditumpuk */
+         width: 100%; /* Tetap full width agar mudah disentuh */
+         justify-content: center; /* Pusatkan teks & ikon */
+         padding: 10px 15px; /* Sedikit perbesar tombol di mobile */
+         font-size: 0.9em;
+    }
 }
 .btn-topup-profile i { margin-right: 6px; }
 
