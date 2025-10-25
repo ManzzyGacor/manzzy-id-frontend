@@ -1,0 +1,51 @@
+<div class="container-card modal" id="card-isi-saldo" style="display: none; max-width: 500px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1002;">
+    <span class="close-btn" onclick="hideIsiSaldoForm()" style="color: #aaa;">&times;</span>
+    <h2 style="margin-top: 0;">Konfirmasi Isi Saldo</h2>
+    <p style="font-size: 0.9em; margin-bottom: 15px;">Permintaan Anda akan di proses Admin.</p>
+    <form id="isiSaldoForm">
+        <label for="jumlah-saldo">Jumlah Isi Saldo (Rp):</label>
+        <input type="number" id="jumlah-saldo" name="jumlah" required min="10000">
+        <button type="submit" class="btn-primary">KONFIRMASI ISI SALDO</button>
+    </form>
+</div>
+
+<div id="purchase-modal" class="modal">
+    <div class="container-card modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modal-product-name" style="color: var(--color-accent); margin-top:0; margin-bottom: 10px;">[Nama Produk]</h2>
+        <img id="modal-product-image" src="" alt="Foto Produk" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+        <p style="font-size: 0.9em; margin-bottom: 15px;">Harga: <span id="modal-product-price" style="font-weight: bold;"></span></p>
+        <p id="modal-product-desc" style="margin-bottom: 20px;"></p>
+        <form id="purchaseForm">
+            <input type="hidden" id="modal-product-id">
+            <label for="quantity">Jumlah Pembelian:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" required style="width: 50%; display: inline-block;">
+            <label style="display: block;">Total Biaya:</label>
+            <p id="total-cost" style="font-size: 1.5em; font-weight: bold; color: #4CAF50;">Rp 0</p>
+            <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%;">KONFIRMASI PEMBELIAN</button>
+        </form>
+    </div>
+</div>
+
+<div id="success-modal" class="modal">
+    <div class="container-card success-modal-content">
+        <span class="close-btn" onclick="closeSuccessModal()">&times;</span>
+        <i class="fas fa-check-circle" style="font-size: 4em; color: #4CAF50; margin-bottom: 20px;"></i>
+        <h2 style="color: #4CAF50; margin-top:0; margin-bottom: 15px;">Pembelian Berhasil!</h2>
+        <p id="success-message" style="margin-bottom: 25px;">Stok telah dikurangi. Silakan konfirmasi pesanan Anda.</p>
+        <a id="whatsapp-confirm-button" href="#" target="_blank" class="btn-primary" style="background-color: #25D366; color: white; display: block; width: 100%; text-decoration: none;">
+            <i class="fab fa-whatsapp"></i> Konfirmasi via WhatsApp
+        </a>
+    </div>
+</div>
+
+<div id="pterodactylSuccessModal" class="custom-modal modal"> <div class="custom-modal-content container-card success-modal-content"> <span class="close-btn" onclick="closePteroSuccessModal()" style="color: #aaa;">&times;</span> <i class="fas fa-server" style="font-size: 4em; color: #4CAF50; margin-bottom: 20px;"></i>
+        <h3 id="modalTitle" style="color: #4CAF50; margin-top:0;">Sukses! Server berhasil dipesan!</h3>
+        <p id="modalMessage" style="margin-bottom: 15px;">Akun Pterodactyl baru telah dibuat.</p>
+        <div class="credentials-box" style="background-color: #1e1e22; padding: 15px 20px; border-radius: 10px; margin: 20px auto; text-align: left; border: 1px dashed rgba(140, 115, 255, 0.4);">
+            <p><strong>Username:</strong> <span id="modalPteroUsername" style="color: #e0e0e0;"></span></p>
+            <p><strong>Password:</strong> <span id="modalPteroPassword" style="color: #e0e0e0;"></span></p>
+        </div>
+        <p class="warning-text" style="font-size: 0.85em; color: #ffcc00; margin-top: 15px; margin-bottom: 25px;">Harap simpan kredensial ini!</p>
+        <button onclick="closePteroSuccessModal()" class="modal-button btn-primary">Oke</button> </div>
+</div>
