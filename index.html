@@ -42,9 +42,9 @@
             <p>Sudah punya akun? <a href="#" id="showLogin">Login</a></p>
         </div>
 
-    </div> <script src="scripts/main.js"></script> 
+<script src="scripts/main.js"></script> 
     <script>
-        // Logika sederhana untuk beralih form (bisa dipindah ke main.js jika mau)
+        // PASTIKAN KODE INI ADA DAN ID-NYA BENAR
         const loginContainer = document.getElementById('login-form-container');
         const registerContainer = document.getElementById('register-form-container');
         const showRegisterLink = document.getElementById('showRegister');
@@ -52,16 +52,40 @@
 
         if (showRegisterLink && showLoginLink && loginContainer && registerContainer) {
             showRegisterLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                loginContainer.style.display = 'none';
-                registerContainer.style.display = 'block';
+                e.preventDefault(); // Mencegah link pindah halaman
+                
+                // Animasi fade out login (opsional)
+                if(loginContainer) loginContainer.style.opacity = '0';
+                setTimeout(() => {
+                    if(loginContainer) loginContainer.style.display = 'none';
+                    
+                    // Tampilkan register & fade in (opsional)
+                    if(registerContainer) registerContainer.style.display = 'block';
+                    setTimeout(() => {
+                        if(registerContainer) registerContainer.style.opacity = '1';
+                    }, 10); // Sedikit delay untuk transisi
+                }, 300); // Sesuaikan durasi dengan transisi CSS jika ada
+
             });
 
             showLoginLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                registerContainer.style.display = 'none';
-                loginContainer.style.display = 'block';
+                e.preventDefault(); // Mencegah link pindah halaman
+                
+                // Animasi fade out register (opsional)
+                 if(registerContainer) registerContainer.style.opacity = '0';
+                 setTimeout(() => {
+                    if(registerContainer) registerContainer.style.display = 'none';
+                    
+                    // Tampilkan login & fade in (opsional)
+                    if(loginContainer) loginContainer.style.display = 'block';
+                    setTimeout(() => {
+                         if(loginContainer) loginContainer.style.opacity = '1';
+                    }, 10);
+                 }, 300);
             });
+        } else {
+             // Jika error ini muncul di console, berarti ID elemennya salah
+            console.error("Error: Salah satu elemen HTML untuk switch form (login/register container atau link) tidak ditemukan! Periksa ID.");
         }
     </script>
 </body>
