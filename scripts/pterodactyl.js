@@ -3,7 +3,7 @@
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data'; 
 // GANTI DENGAN URL PANEL PTERODACTYL ANDA (tanpa /api/application)
-const PTERO_PANEL_URL = 'https://ptero.allzxyprivate-host.my.id/'; 
+const PTERO_PANEL_URL = 'https://nodepublikzeingacor.panel-freefire.biz.id'; 
 
 const userToken = localStorage.getItem('userToken');
 const serverListContainer = document.getElementById('server-list');
