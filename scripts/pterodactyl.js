@@ -103,16 +103,16 @@ if (orderServerForm) {
 
             const data = await response.json();
 
+            // scripts/pterodactyl.js (Hanya bagian if response.ok di event listener form)
+
             if (response.ok) {
-                // --- MENAMPILKAN KREDENSIAL DI ALERT ---
+                // --- PESAN ALERT BARU DENGAN PASSWORD PREDICTABLE ---
                 let successMessage = `Sukses! ${data.message}`;
-                if (data.pterodactylCredentials && data.pterodactylCredentials.password) {
-                    successMessage += `\n\nLogin Pterodactyl Panel:\nUsername: ${data.pterodactylCredentials.username}\nPassword: ${data.pterodactylCredentials.password}\n\nHarap simpan password ini!`;
-                } else if (data.pterodactylCredentials) {
-                     successMessage += `\n\nLogin Pterodactyl Panel dengan akun:\nUsername: ${data.pterodactylCredentials.username}\n(Gunakan password Pterodactyl Anda yang sudah ada)`;
+                if (data.pterodactylCredentials && data.pterodactylCredentials.username) {
+                    successMessage += `\n\nLogin Pterodactyl Panel:\nUsername: ${data.pterodactylCredentials.username}\nPassword: ${data.pterodactylCredentials.username}123\n\nHarap simpan kredensial ini!`; // Langsung sebutkan format password
                 }
                 alert(successMessage);
-                // ----------------------------------------
+                // --------------------------------------------------
 
                 orderServerForm.reset();
                 fetchUserServers(); // Muat ulang daftar server
