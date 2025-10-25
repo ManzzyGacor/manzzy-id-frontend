@@ -1,0 +1,123 @@
+/* styles/pterodactyl-theme.css - Styling untuk Modal Pop-up */
+
+/* Base Modal Styles */
+.custom-modal {
+    display: none; /* Sembunyikan secara default */
+    position: fixed; /* Tetap di viewport */
+    z-index: 1000; /* Di atas elemen lain */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Aktifkan scroll jika konten terlalu besar */
+    background-color: rgba(0, 0, 0, 0.7); /* Latar belakang transparan gelap */
+    display: flex; /* Gunakan flexbox untuk centering */
+    align-items: center; /* Vertikal center */
+    justify-content: center; /* Horizontal center */
+    backdrop-filter: blur(5px); /* Efek blur pada latar belakang */
+    -webkit-backdrop-filter: blur(5px); /* Untuk Safari */
+}
+
+.custom-modal-content {
+    background-color: #2c2f33; /* Warna gelap ala Soft Botz */
+    margin: auto; /* Centering */
+    padding: 30px;
+    border-radius: 15px; /* Sudut lebih membulat */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Shadow lebih kuat */
+    max-width: 400px; /* Lebar maksimum */
+    width: 90%; /* Responsif */
+    text-align: center;
+    color: #f1f1f1; /* Warna teks terang */
+    border: 1px solid rgba(75, 78, 85, 0.5); /* Border tipis */
+    animation: fadeInScale 0.3s ease-out; /* Animasi muncul */
+}
+
+/* Animasi muncul pop-up */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Header/Title */
+.custom-modal-content h3 {
+    color: #8c73ff; /* Warna ungu-biru dari Soft Botz */
+    font-size: 1.6em;
+    margin-bottom: 15px;
+}
+
+/* Message text */
+.custom-modal-content p {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* Credentials Box */
+.credentials-box {
+    background-color: #1e1e22; /* Warna lebih gelap untuk kontras */
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    text-align: left;
+    border: 1px dashed rgba(140, 115, 255, 0.4); /* Border putus-putus ungu */
+}
+
+.credentials-box p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: #e0e0e0;
+}
+
+.credentials-box strong {
+    color: #a894ff; /* Warna ungu terang */
+    margin-right: 5px;
+}
+
+/* Warning Text */
+.warning-text {
+    font-size: 0.85em;
+    color: #ffcc00; /* Warna kuning peringatan */
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+/* Button */
+.modal-button {
+    background-image: linear-gradient(to right, #8c73ff 0%, #00c6ff 100%); /* Gradient ala Soft Botz */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4);
+    outline: none;
+}
+
+.modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 198, 255, 0.6);
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .custom-modal-content {
+        padding: 20px;
+        max-width: 95%;
+    }
+    .custom-modal-content h3 {
+        font-size: 1.4em;
+    }
+    .modal-button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
