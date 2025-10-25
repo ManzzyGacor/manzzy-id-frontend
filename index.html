@@ -43,51 +43,48 @@
         </div>
 
 <script src="scripts/main.js"></script> 
+    
     <script>
-        // PASTIKAN KODE INI ADA DAN ID-NYA BENAR
-        const loginContainer = document.getElementById('login-form-container');
-        const registerContainer = document.getElementById('register-form-container');
-        const showRegisterLink = document.getElementById('showRegister');
-        const showLoginLink = document.getElementById('showLogin');
-
-        if (showRegisterLink && showLoginLink && loginContainer && registerContainer) {
-            showRegisterLink.addEventListener('click', (e) => {
-                e.preventDefault(); // Mencegah link pindah halaman
+        // Tunggu sampai seluruh HTML selesai dimuat baru jalankan kode ini
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const loginContainer = document.getElementById('login-form-container');
+            const registerContainer = document.getElementById('register-form-container');
+            const showRegisterLink = document.getElementById('showRegister');
+            const showLoginLink = document.getElementById('showLogin');
+    
+            // Cek apakah semua elemen ditemukan
+            if (loginContainer && registerContainer && showRegisterLink && showLoginLink) {
                 
-                // Animasi fade out login (opsional)
-                if(loginContainer) loginContainer.style.opacity = '0';
-                setTimeout(() => {
-                    if(loginContainer) loginContainer.style.display = 'none';
-                    
-                    // Tampilkan register & fade in (opsional)
-                    if(registerContainer) registerContainer.style.display = 'block';
-                    setTimeout(() => {
-                        if(registerContainer) registerContainer.style.opacity = '1';
-                    }, 10); // Sedikit delay untuk transisi
-                }, 300); // Sesuaikan durasi dengan transisi CSS jika ada
+                showRegisterLink.addEventListener('click', function(event) {
+                    event.preventDefault(); // Stop link default
+                    console.log("Klik 'Daftar di sini' terdeteksi!"); // Debugging
+                    loginContainer.style.display = 'none';    // Sembunyikan login
+                    registerContainer.style.display = 'block'; // Tampilkan register
+                    // Pastikan opacity juga 1 jika pakai transisi
+                    // registerContainer.style.opacity = '1'; 
+                });
+    
+                showLoginLink.addEventListener('click', function(event) {
+                    event.preventDefault(); // Stop link default
+                    console.log("Klik 'Login' (dari register) terdeteksi!"); // Debugging
+                    registerContainer.style.display = 'none'; // Sembunyikan register
+                    loginContainer.style.display = 'block';   // Tampilkan login
+                     // Pastikan opacity juga 1 jika pakai transisi
+                    // loginContainer.style.opacity = '1';
+                });
+    
+                console.log("Event listeners untuk switch form berhasil ditambahkan."); // Pesan sukses
 
-            });
+            } else {
+                 // Jika error ini muncul di console, berarti ID elemennya salah
+                console.error("Error Penting: Elemen form login/register atau link switch tidak ditemukan! Periksa ID di HTML.");
+            }
 
-            showLoginLink.addEventListener('click', (e) => {
-                e.preventDefault(); // Mencegah link pindah halaman
-                
-                // Animasi fade out register (opsional)
-                 if(registerContainer) registerContainer.style.opacity = '0';
-                 setTimeout(() => {
-                    if(registerContainer) registerContainer.style.display = 'none';
-                    
-                    // Tampilkan login & fade in (opsional)
-                    if(loginContainer) loginContainer.style.display = 'block';
-                    setTimeout(() => {
-                         if(loginContainer) loginContainer.style.opacity = '1';
-                    }, 10);
-                 }, 300);
-            });
-        } else {
-             // Jika error ini muncul di console, berarti ID elemennya salah
-            console.error("Error: Salah satu elemen HTML untuk switch form (login/register container atau link) tidak ditemukan! Periksa ID.");
-        }
+        }); // Akhir dari DOMContentLoaded
     </script>
+</body>
+</html>
 </body>
 </html>
  
