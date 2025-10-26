@@ -51,7 +51,6 @@
     </div>
 
     <div class="navigation-section">
-        <a href="topup.html" class="nav-box"> <i class="fas fa-wallet"></i><h4>Top Up Saldo</h4></a>
         <a href="pterodactyl.html" class="nav-box"> <i class="fas fa-server"></i><h4>Panel Server</h4></a>
         <a href="https://wa.me/62895605053911?text=Halo%20Admin%2C%20saya%20tertarik%20dengan%20layanan%20Bot%20WA." target="_blank" class="nav-box"> <i class="fab fa-whatsapp"></i><h4>Jadi Bot WA</h4></a>
         <a href="https://discord.gg/yourinvite" target="_blank" class="nav-box"> <i class="fab fa-discord"></i><h4>Komunitas Discord</h4></a>
@@ -67,7 +66,7 @@
         </div>
     </div>
 
-    <div id="purchase-modal" class="modal">
+    <div id="purchase-modal" class="modal" style="display: none;">
         <div class="container-card modal-content">
              <span class="close-btn" onclick="closeModal()">&times;</span>
             <h2 id="modal-product-name" style="color: var(--color-accent); margin-top:0; margin-bottom: 10px;">[Nama Produk]</h2>
@@ -85,8 +84,9 @@
         </div>
     </div>
 
-    <div id="success-modal" class="modal">
-        <div class="container-card success-modal-content">
+    <div id="success-modal" class="modal" style="display: none;"> <div class="container-card success-modal-content">
+        </div>
+    </div>    
              <span class="close-btn" onclick="closeSuccessModal()">&times;</span>
             <i class="fas fa-check-circle" style="font-size: 4em; color: #4CAF50; margin-bottom: 20px;"></i>
             <h2 style="color: #4CAF50; margin-top:0; margin-bottom: 15px;">Pembelian Berhasil!</h2>
