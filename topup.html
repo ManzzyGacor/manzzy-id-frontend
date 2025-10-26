@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manzzy ID Official - Top Up Saldo</title>
+    <link rel="stylesheet" href="styles/main.css"> 
+    <link rel="stylesheet" href="styles/topup-styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2 style="color: var(--color-text-light);">Manzzy ID</h2>
+        <div class="hamburger-menu" id="hamburger-menu"> <span class="bar"></span><span class="bar"></span><span class="bar"></span> </div>
+        <ul class="nav-links" id="nav-links">
+             <li id="welcome-menu-item" style="padding: 15px 30px; color: #fff; background-color: #333; font-weight: 600; border-bottom: 2px solid var(--color-accent);">Top Up Saldo</li>
+            <li><a href="dashboard.html">Dashboard Utama</a></li>
+            <li><a href="pterodactyl.html">Panel Server</a></li>
+            <li><a href="admin.html" id="admin-link">Login Admin</a></li>
+            <li><a href="https://wa.me/62895605053911" target="_blank">Kontak Admin</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ff5555;">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="topup-page-wrapper">
+        <div class="topup-container container-card">
+            <h1><i class="fas fa-coins"></i> Top Up Saldo Anda</h1>
+            
+            <div class="current-balance">
+                Saldo Saat Ini: <strong id="current-user-saldo">Memuat...</strong>
+            </div>
+
+            <form id="topupForm">
+                <label for="amount">Jumlah Top Up (Rp):</label>
+                <div class="input-group">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <input type="number" id="amount" name="amount" placeholder="Minimal Rp 1.000" required min="1000" step="500">
+                </div>
+
+                <p style="font-size: 0.9em; color: #ccc; margin-bottom: 25px;">Pilih metode pembayaran:</p>
+
+                <div class="payment-options">
+                    <button type="button" id="payWithPakasirBtn" class="btn-primary btn-gradient">
+                        <i class="fas fa-bolt"></i> Bayar Otomatis (Pakasir)
+                    </button>
+                    
+                    <button type="button" id="manualConfirmBtn" class="btn-secondary">
+                        <i class="fas fa-clipboard-check"></i> Konfirmasi Manual
+                    </button>
+                </div>
+            </form>
+             <p id="manual-info" style="display:none; font-size: 0.85em; color: #aaa; margin-top: 15px;">Permintaan top up manual akan dicatat. Silakan hubungi admin untuk konfirmasi pembayaran.</p>
+        </div>
+    </div>
+
+     <div class="footer"> &copy; 2025 Manzzy ID Official. All rights reserved. </div>
+    
+    <script>
+        // Inline script minimal untuk navbar & logout
+        const hamburgerMenu = document.getElementById('hamburger-menu'); const navLinks = document.getElementById('nav-links'); const adminLink = document.getElementById('admin-link'); const logoutBtn = document.getElementById('logout-btn'); const welcomeMenuText = document.getElementById('welcome-menu-item');
+        if(hamburgerMenu && navLinks){ hamburgerMenu.addEventListener('click', () => { hamburgerMenu.classList.toggle('active'); navLinks.classList.toggle('active'); }); }
+        const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (welcomeMenuText && userData) welcomeMenuText.textContent = `Top Up Saldo`; // Sesuaikan judul menu
+        if(adminLink && userData){ if (!userData.isAdmin) { adminLink.style.display = 'none'; } else { adminLink.textContent = 'Admin Panel'; adminLink.href = 'admin.html'; } }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('userToken'); localStorage.removeItem('loggedInUser'); alert('Anda berhasil logout.'); window.location.href = 'index.html'; }); }
+        // Fungsi logout helper (jika dipanggil dari topup.js)
+        function logoutUser() { localStorage.removeItem('userToken'); localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; }
+    </script>
+    <script src="scripts/topup.js"></script> </body>
+</html>
