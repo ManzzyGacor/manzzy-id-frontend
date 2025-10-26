@@ -1,0 +1,149 @@
+/* styles/topup-styles.css */
+
+/* Wrapper untuk centering */
+.topup-page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* Tinggi viewport dikurangi navbar */
+    padding: 20px;
+}
+
+/* Container utama form topup */
+.topup-container {
+    width: 100%;
+    max-width: 500px; /* Lebar form */
+    text-align: center;
+    /* Mengambil gaya glassmorphism dari .container-card di main.css */
+    /* Pastikan .container-card di main.css sudah benar */
+}
+
+.topup-container h1 {
+    color: var(--color-accent);
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    border-bottom: 1px solid rgba(0, 188, 212, 0.3);
+    padding-bottom: 10px;
+}
+.topup-container h1 i {
+    margin-right: 10px;
+}
+
+/* Tampilan Saldo Saat Ini */
+.current-balance {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    color: #ccc;
+}
+.current-balance strong {
+    color: #4CAF50; /* Warna hijau saldo */
+    font-weight: 700;
+}
+
+/* Label Form */
+.topup-container label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #bbb;
+}
+
+/* Input Group (menggunakan style dari main.css) */
+.input-group { 
+    position: relative; 
+    /* margin-bottom: 20px; */ /* Sudah ada di input global */
+}
+.input-group i { 
+    position: absolute; 
+    left: 15px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    color: rgba(255, 255, 255, 0.7); 
+    font-size: 1.1em; 
+    /* Z-index ditambahkan jika ikon tertutup input */
+    z-index: 2; 
+}
+.topup-container input[type="number"] {
+    /* Mengambil gaya input dasar dari main.css */
+    padding-left: 45px; /* Ruang untuk ikon */
+    font-size: 1.1em; /* Ukuran font input */
+}
+/* Hilangkan panah spinner di input number */
+.topup-container input[type=number]::-webkit-inner-spin-button, 
+.topup-container input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+.topup-container input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* Opsi Pembayaran */
+.payment-options {
+    display: flex;
+    flex-direction: column; /* Tombol ditumpuk */
+    gap: 15px; /* Jarak antar tombol */
+    margin-top: 10px;
+}
+
+/* Tombol Gradient (Pakasir) */
+.btn-gradient {
+    background-image: linear-gradient(to right, #8c73ff 0%, #00c6ff 100%);
+    color: white;
+    padding: 14px 25px; /* Padding lebih besar */
+    font-size: 1.1em;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex; /* Agar ikon dan teks sejajar */
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Jarak ikon dan teks */
+    /* Pastikan styling btn-primary tidak menimpa background-image */
+    background-color: transparent; /* Hapus background color solid */
+    text-transform: uppercase; /* Samakan dengan .btn-primary */
+}
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 198, 255, 0.6);
+}
+.btn-gradient:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-image: none;
+    background-color: #555;
+    box-shadow: none;
+}
+
+
+/* Tombol Sekunder (Manual) */
+.btn-secondary {
+    background-color: #4f545c; /* Warna abu-abu */
+    color: #ccc;
+    padding: 12px 25px;
+    border: 1px solid #6c717a;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase; /* Samakan dengan .btn-primary */
+}
+.btn-secondary:hover {
+    background-color: #6c717a;
+    color: white;
+}
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #333;
+}
