@@ -3,7 +3,7 @@
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 // GANTI DENGAN URL PANEL PTERODACTYL ANDA (tanpa /api/application)
-const PTERO_PANEL_URL = 'https://panel.contoh.com'; // Contoh: https://panel.manzzy.web.id
+const PTERO_PANEL_URL = 'https://nodepublikzeingacor.panel-freefire.biz.id'; // Contoh: https://panel.manzzy.web.id
 
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
 
