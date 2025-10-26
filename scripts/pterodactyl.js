@@ -1,9 +1,9 @@
-// scripts/pterodactyl.js (VERSI LENGKAP - Debugging Ditambahkan)
+// scripts/pterodactyl.js (LENGKAP - Modal Kustom untuk Sukses Beli Server)
 
 // GANTI DENGAN URL VERCEL API ANDA YANG AKTIF!
 const API_DATA_URL = 'https://manzzy-id-backend.vercel.app/api/data';
 // GANTI DENGAN URL PANEL PTERODACTYL ANDA (tanpa /api/application)
-const PTERO_PANEL_URL = 'https://nodepublikzeingacor.panel-freefire.biz.id/'; // Contoh: https://panel.manzzy.web.id
+const PTERO_PANEL_URL = 'https://panel.contoh.com'; // Contoh: https://panel.manzzy.web.id
 
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
 
@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const userToken = localStorage.getItem('userToken');
     const serverListContainer = document.getElementById('server-list');
     const orderServerForm = document.getElementById('orderServerForm');
+
+    // --- Elemen Modal Kustom Sukses Ptero ---
+    const pterodactylSuccessModal = document.getElementById('pterodactylSuccessModal');
+    const modalPteroUsername = document.getElementById('modalPteroUsername');
+    const modalPteroPassword = document.getElementById('modalPteroPassword');
+    const modalMessageP = document.getElementById('modalMessage'); // Optional
+    // Pastikan tombol close modal punya ID atau cara lain untuk event listener
+    // const modalCloseBtn = document.getElementById('modalCloseBtn'); // Ganti ID jika perlu
 
     // --- Cek Login Awal ---
     if (!userToken) {
@@ -112,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const serverNameElement = document.getElementById('server-name');
             const packageIdElement = document.getElementById('package-id');
 
-            // Cek elemen form
             if (!serverNameElement || !packageIdElement) {
                 console.error("Elemen form 'server-name' atau 'package-id' tidak ditemukan!");
                 alert("Terjadi kesalahan pada formulir. Harap refresh halaman.");
@@ -121,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const serverName = serverNameElement.value.trim();
             const packageId = packageIdElement.value;
-            const currentToken = localStorage.getItem('userToken'); // Ambil token terbaru
+            const currentToken = localStorage.getItem('userToken');
 
             if(!currentToken) return logoutUser();
             if(!packageId) return alert("Harap pilih paket server.");
@@ -130,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedOption = packageIdElement.selectedOptions[0];
             const packageName = selectedOption ? selectedOption.text : packageId;
 
-            if (!confirm(`Yakin ingin membeli ${packageName} dengan nama "${serverName}"? Saldo Anda akan dipotong.`)) return;
+            if (!confirm(`Yakin ingin membeli ${packageName} dengan nama "${serverName}"? Saldo akan dipotong.`)) return;
 
             const button = orderServerForm.querySelector('button[type="submit"]');
             if (!button) {
@@ -157,18 +164,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Data response pembelian:", data); // Debug
 
                 if (response.ok) {
-                    let successMessage = `Sukses! ${data.message}`;
-                    // Tampilkan kredensial HANYA jika backend mengirimnya
-                    if (data.pterodactylCredentials && data.pterodactylCredentials.password) {
-                        successMessage += `\n\nLogin Pterodactyl Panel:\nUsername: ${data.pterodactylCredentials.username}\nPassword: ${data.pterodactylCredentials.password}\n\nHarap simpan kredensial ini!`;
-                    } else if (data.pterodactylCredentials && data.pterodactylCredentials.username) {
-                        // Jika password null (karena user sudah ada)
-                         successMessage += `\n\nLogin Pterodactyl Panel dengan akun:\nUsername: ${data.pterodactylCredentials.username}\n(Gunakan password Pterodactyl Anda yang sudah ada)`;
+                    // --- MENAMPILKAN MODAL KUSTOM ---
+                    if (pterodactylSuccessModal && modalPteroUsername && modalPteroPassword) {
+                        // Isi kredensial ke dalam modal
+                        if (data.pterodactylCredentials && data.pterodactylCredentials.username) {
+                            modalPteroUsername.textContent = data.pterodactylCredentials.username;
+                            // Tampilkan password hanya jika backend mengirimnya (user baru)
+                            modalPteroPassword.textContent = data.pterodactylCredentials.password || '(Gunakan password Anda yang sudah ada)';
+                             if (modalMessageP) modalMessageP.textContent = "Akun Pterodactyl baru telah dibuat.";
+                        } else {
+                            // Jika backend tidak kirim kredensial
+                            modalPteroUsername.textContent = 'N/A';
+                            modalPteroPassword.textContent = 'N/A';
+                             if (modalMessageP) modalMessageP.textContent = "Berhasil memesan server.";
+                        }
+                        pterodactylSuccessModal.style.display = 'flex'; // Tampilkan modal
+                    } else {
+                        // Fallback jika elemen modal tidak ditemukan
+                        console.error("Elemen modal sukses Pterodactyl (#pterodactylSuccessModal, #modalPteroUsername, #modalPteroPassword) tidak ditemukan!");
+                        // Tampilkan alert lama sebagai fallback
+                        let fallbackMessage = `Sukses! ${data.message}`;
+                        if (data.pterodactylCredentials && data.pterodactylCredentials.username) {
+                            fallbackMessage += `\n\nLogin Pterodactyl:\nUsername: ${data.pterodactylCredentials.username}\nPassword: ${data.pterodactylCredentials.password || '(Password Lama)'}`;
+                        }
+                        alert(fallbackMessage);
                     }
-                    alert(successMessage);
+                    // ------------------------------------
 
                     orderServerForm.reset();
-                    fetchUserServers();
+                    fetchUserServers(); // Muat ulang daftar server
                     localStorage.removeItem('loggedInUser'); // Hapus cache data user agar saldo terupdate di dashboard
                 } else if (response.status === 401) {
                      console.error("Purchase Failed: 401 Unauthorized");
@@ -235,8 +259,31 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error controlling server:', error);
             buttons.forEach(btn => btn.style.opacity = '1');
         } finally {
-             // Jangan langsung kembalikan opacity, tunggu refresh
+             // Kembalikan opacity setelah selesai (baik sukses maupun gagal, setelah timeout refresh)
+             // setTimeout(() => buttons.forEach(btn => btn.style.opacity = '1'), 8000);
         }
     };
+
+    // --- Fungsi untuk menutup Modal Sukses Ptero ---
+    // Pastikan ini global agar bisa dipanggil dari HTML (onclick)
+    window.closePteroSuccessModal = function() {
+        const modal = document.getElementById('pterodactylSuccessModal');
+        if(modal) modal.style.display = 'none';
+    }
+
+    // Event listener untuk tombol close jika ID-nya 'modalCloseBtn' (sesuaikan)
+    const modalCloseButton = document.getElementById('modalCloseBtn'); // Ganti ID jika berbeda
+    if (modalCloseButton) {
+        modalCloseButton.addEventListener('click', closePteroSuccessModal);
+    }
+    // Tutup modal jika klik di luar
+    if (pterodactylSuccessModal) {
+         pterodactylSuccessModal.addEventListener('click', (e) => {
+             if (e.target === pterodactylSuccessModal) {
+                 closePteroSuccessModal();
+             }
+         });
+    }
+
 
 }); // Akhir dari DOMContentLoaded
